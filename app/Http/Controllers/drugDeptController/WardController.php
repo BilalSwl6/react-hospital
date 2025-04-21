@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\drugDeptController;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Drugdept\WardResource;
 use App\Models\Ward;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Inertia\Inertia;
-use App\Http\Resources\Drugdept\WardResource;
 
 class WardController extends Controller
 {
@@ -16,6 +16,7 @@ class WardController extends Controller
     public function index()
     {
         $wards = Ward::paginate(10);
+
         return Inertia::render('Drugdept/ward/index', [
             'data' => WardResource::collection($wards),
         ]);
@@ -95,6 +96,7 @@ class WardController extends Controller
     public function destroy(Ward $ward)
     {
         $ward->delete();
+
         return redirect('/wards')->with('info', 'Ward deleted successfully.');
     }
 
@@ -113,10 +115,10 @@ class WardController extends Controller
             'items' => $wards->map(function ($ward) {
                 return [
                     'id' => $ward->id,
-                    'text' => $ward->ward_name
+                    'text' => $ward->ward_name,
                 ];
             }),
-            'total_count' => $wards->total()
+            'total_count' => $wards->total(),
         ]);
     }
 }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\drugDeptController;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Models\ExpenseRecord;
-use App\Models\Medicine;
 use App\Models\Generic;
+use App\Models\Medicine;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ExpenseRecordController extends Controller
@@ -37,7 +37,6 @@ class ExpenseRecordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -74,10 +73,9 @@ class ExpenseRecordController extends Controller
             return redirect()->route('expense.index')->with('success', 'Expense records created and quantities updated successfully');
         } catch (\Exception $e) {
             // Handle errors and redirect back with an error message
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -132,7 +130,8 @@ class ExpenseRecordController extends Controller
             return redirect()->back()->with('success', 'Quantity updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
 
@@ -158,7 +157,8 @@ class ExpenseRecordController extends Controller
             return redirect()->back()->with('info', 'Record deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
 }

@@ -114,6 +114,7 @@ class GenericController extends Controller
     public function destroy(Generic $generic)
     {
         $generic->delete();
+
         return redirect('/generics')->with('info', 'Generic deleted successfully.');
     }
 }

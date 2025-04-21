@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\drugDeptController;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use App\Models\Generic;
 use App\Models\Medicine;
 use App\Models\Medicine_log;
 use App\Services\ExcelExportService;
 use Carbon\Carbon;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 
 class MedicineController extends Controller
 {
@@ -40,13 +39,13 @@ class MedicineController extends Controller
         ]);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         $generics = Generic::all()->where('generic_status', 1);
+
         return view('drugDept.medicine.create', compact('generics'));
     }
 
@@ -76,7 +75,7 @@ class MedicineController extends Controller
         if ($request->hasFile('med_image')) {
             $file = $request->file('med_image');
             $extension = $file->getClientOriginalExtension();
-            $filename = time() . '.' . $extension;
+            $filename = time().'.'.$extension;
             $path = 'uploads/medicines/';
             $file->move($path, $filename);
         }
@@ -95,7 +94,7 @@ class MedicineController extends Controller
                 'category' => $request->category,
                 'manufacturer' => $request->manufacturer,
                 'status' => $request->has('status') ? 1 : 0,
-                'image' => $path . $filename,
+                'image' => $path.$filename,
             ]);
 
             return redirect('/medicines')->with('success', 'Medicine created successfully.');
@@ -114,6 +113,7 @@ class MedicineController extends Controller
     public function show(Medicine $medicine)
     {
         $medicine = Medicine::with('generic')->find($medicine->id);
+
         return view('drugDept.medicine.show', compact('medicine'));
     }
 
@@ -123,6 +123,7 @@ class MedicineController extends Controller
     public function edit(Medicine $medicine)
     {
         $generics = Generic::all()->where('generic_status', 1);
+
         return view('drugDept.medicine.edit', compact('medicine', 'generics'));
     }
 
@@ -157,7 +158,7 @@ class MedicineController extends Controller
             }
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
-            $filename = time() . '.' . $extension;
+            $filename = time().'.'.$extension;
             $path = 'uploads/medicines/';
             $file->move($path, $filename);
         }
@@ -178,17 +179,19 @@ class MedicineController extends Controller
                 'category' => $request->category,
                 'manufacturer' => $request->manufacturer,
                 'status' => $request->has('status') ? 1 : 0,
-                'image' => $path . $filename,
+                'image' => $path.$filename,
             ]);
 
             return redirect('/medicines')->with('success', 'Medicine updated successfully.');
         } catch (\Illuminate\Database\QueryException $e) {
             // Get SQL error message
             $errorMessage = $e->getMessage();
+
             // Redirect back with error message
             return redirect()->back()->with('error', $errorMessage);
         }
     }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -199,6 +202,7 @@ class MedicineController extends Controller
             File::delete(public_path($medicine->image));
         }
         $medicine->delete();
+
         return redirect('/medicines')->with('info', 'Medicine deleted successfully.');
     }
 
@@ -222,6 +226,7 @@ class MedicineController extends Controller
             'medicines' => $medicines,
         ]);
     }
+
     /**
      * View Logs of Spacific Medicine
      */
@@ -229,8 +234,10 @@ class MedicineController extends Controller
     {
         $medicine = Medicine::with('generic')->find($medicine->id);
         $medicineLogs = Medicine_log::query()->where('medicine_id', $medicine->id)->orderBy('id', 'desc')->get();
+
         return view('drugDept.medicine.logs', compact('medicine', 'medicineLogs'));
     }
+
     /**
      * Add stock to the specified medicine.
      */
@@ -275,13 +282,14 @@ class MedicineController extends Controller
                 'success' => true,
                 'message' => 'Stock updated successfully.',
                 'new_quantity' => $medicine->quantity,
-                'log' => $medicineLog
+                'log' => $medicineLog,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred: ' . $e->getMessage()
+                'message' => 'An error occurred: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -297,7 +305,7 @@ class MedicineController extends Controller
     {
         $request->validate([
             'status' => 'nullable|string',
-            'excludeZero' => 'nullable|string'
+            'excludeZero' => 'nullable|string',
         ]);
 
         // Fetch your data with the associated generic name
@@ -335,9 +343,8 @@ class MedicineController extends Controller
             ];
         }
 
-
         // Define the headers for the Excel file
-        $headers = ['Medicine Name', 'Category', 'Route', 'Generic Name', 'Expiry Date' , 'Quantity', 'Total Quantity', 'Status', 'Used'];
+        $headers = ['Medicine Name', 'Category', 'Route', 'Generic Name', 'Expiry Date', 'Quantity', 'Total Quantity', 'Status', 'Used'];
 
         // Call the export service
         $filePath = $this->excelExportService->export($data, $headers, 'medicines.xlsx');
@@ -345,7 +352,6 @@ class MedicineController extends Controller
         // Return the file as a download response
         return Response::download($filePath, 'medicines.xlsx')->deleteFileAfterSend(true);
     }
-
 
     /**
      * Search for medicines.
@@ -363,7 +369,7 @@ class MedicineController extends Controller
 
             // Apply search conditions if search term exists
             if ($search) {
-                $searchTerm = '%' . $search . '%';
+                $searchTerm = '%'.$search.'%';
 
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', $searchTerm)
@@ -388,7 +394,7 @@ class MedicineController extends Controller
                     'generic_name' => $genericName,
                     'category' => $medicine->category ?? 'N/A',
                     'strength' => $medicine->strength ?? 'N/A',
-                    'route' => $medicine->route ?? 'N/A'
+                    'route' => $medicine->route ?? 'N/A',
                 ];
             });
 
@@ -401,9 +407,10 @@ class MedicineController extends Controller
             ]);
         } catch (\Exception $e) {
             report($e);
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while searching medicines'
+                'message' => 'An error occurred while searching medicines',
             ], 500);
         }
     }
@@ -411,9 +418,8 @@ class MedicineController extends Controller
     /**
      * Format the medicine text display
      *
-     * @param Medicine $medicine
-     * @param string $genericName
-     * @return string
+     * @param  Medicine  $medicine
+     * @param  string  $genericName
      */
     private function formatMedicineText($medicine, $genericName): string
     {

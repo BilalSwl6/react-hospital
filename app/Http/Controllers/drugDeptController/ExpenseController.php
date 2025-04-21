@@ -3,17 +3,13 @@
 namespace App\Http\Controllers\drugDeptController;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\Expense;
+use App\Models\ExpenseRecord;
+use App\Models\Medicine;
+use App\Models\Ward;
+use App\Services\ExcelExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Log;
-use App\Models\Ward;
-use App\Models\Expense;
-use App\Models\Medicine;
-use App\Models\Generic;
-use App\Models\ExpenseRecord;
-use App\Services\ExcelExportService;
 
 class ExpenseController extends Controller
 {
@@ -78,6 +74,7 @@ class ExpenseController extends Controller
     public function create()
     {
         $wards = Ward::orderBy('ward_name', 'asc')->where('ward_status', 1)->get();
+
         return view('drugDept.expense.create', compact('wards'));
     }
 
@@ -111,10 +108,11 @@ class ExpenseController extends Controller
                     'user_id' => Auth::user()->id,
                 ]);
             }
+
             return redirect()->route('expenseRecord.create', ['expense_id' => $expense->id])
                 ->with('success', 'Expense created successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
 
@@ -136,6 +134,7 @@ class ExpenseController extends Controller
     {
         $expense = Expense::findOrFail($id);
         $wards = Ward::orderBy('ward_name', 'asc')->where('ward_status', 1)->get();
+
         return view('drugDept.expense.edit', compact('expense', 'wards'));
     }
 
@@ -160,7 +159,7 @@ class ExpenseController extends Controller
 
             return redirect()->route('expense.index')->with('success', 'Expense updated successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
 
@@ -175,7 +174,7 @@ class ExpenseController extends Controller
 
             return redirect()->route('expense.index')->with('info', 'Expense deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
 
@@ -219,7 +218,7 @@ class ExpenseController extends Controller
             $medicine = $record->medicine->name;
             $quantity = $record->quantity;
 
-            if (!isset($data[$date])) {
+            if (! isset($data[$date])) {
                 $data[$date] = [
                     'Date' => $date,
                     'Ward' => $ward,

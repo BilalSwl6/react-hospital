@@ -5,9 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\User;
-use App\Models\Ward;
-use App\Models\ExpenseRecord;
 
 class Expense extends Model
 {
@@ -37,4 +34,3 @@ class Expense extends Model
         return $this->expenseRecords->count();
     }
 }
-

@@ -25,5 +25,4 @@ class Generic extends Model
     {
         return $this->hasMany(Medicine::class);
     }
-
 }

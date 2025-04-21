@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
-use App\Models\Generic;
-use App\Models\ExpenseRecord;
 
 class Medicine extends Model
 {
@@ -48,6 +45,7 @@ class Medicine extends Model
         foreach ($records as $record) {
             $total += $record->quantity;
         }
+
         return $total;
     }
 
@@ -59,8 +57,10 @@ class Medicine extends Model
             foreach ($records as $record) {
                 $total += $record->quantity;
             }
+
             return $total;
         }
+
         return 0;
     }
 }

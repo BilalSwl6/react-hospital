@@ -23,5 +23,4 @@ class Medicine_log extends Model
     {
         return $this->belongsTo(Medicine::class, 'medicine_id');
     }
-    
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\drugDeptController;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class DrugDeptController extends Controller
 {
@@ -16,6 +15,4 @@ class DrugDeptController extends Controller
     {
         return 'Drug Dept';
     }
-
-    public function 
 }

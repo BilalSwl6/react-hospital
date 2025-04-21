@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +24,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '100mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => 2025-07-31,
+                'expiry_date' => 2025 - 07 - 31,
                 'manufacturer' => 'PharmaSol Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -41,7 +40,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '10mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => 2026-04-30,
+                'expiry_date' => 2026 - 04 - 30,
                 'manufacturer' => 'Ameer Pharma Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -57,7 +56,7 @@ class MedicineSeeder extends Seeder
                 'strength' => null,
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => 2026-02-01,
+                'expiry_date' => 2026 - 02 - 01,
                 'manufacturer' => 'PharmaSol Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -73,7 +72,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '40mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => 2026-06-30,
+                'expiry_date' => 2026 - 06 - 30,
                 'manufacturer' => 'MTI Medical',
                 'status' => 1,
                 'image' => null,
@@ -89,7 +88,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '4mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => 2025-07-31,
+                'expiry_date' => 2025 - 07 - 31,
                 'manufacturer' => 'PharmaSol Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -105,7 +104,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '25mg',
                 'route' => 'Intramuscular',
                 'notes' => null,
-                'expiry_date' => 2026-01-31,
+                'expiry_date' => 2026 - 01 - 31,
                 'manufacturer' => 'Neutro Pharma Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -121,11 +120,11 @@ class MedicineSeeder extends Seeder
                 'strength' => '1g',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => 2021-01-31,
+                'expiry_date' => 2021 - 01 - 31,
                 'manufacturer' => 'MTI Medical',
                 'status' => 1,
                 'image' => null,
             ],
         ]);
-        }
+    }
 }

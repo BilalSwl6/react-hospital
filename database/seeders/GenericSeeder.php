@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +28,7 @@ class GenericSeeder extends Seeder
                 'generic_name' => 'Dexamethasone',
                 'generic_description' => 'Dexamethasone is a corticosteroid that prevents the release of substances in the body that cause inflammation',
                 'generic_status' => 1,
-                'generic_notes' => "Steroid",
+                'generic_notes' => 'Steroid',
                 'generic_category' => 'Corticosteroid',
                 'generic_subcategory' => null,
                 'therapeutic_class' => 'Corticosteroid',
