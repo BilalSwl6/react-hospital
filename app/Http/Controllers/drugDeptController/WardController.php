@@ -15,19 +15,12 @@ class WardController extends Controller
      */
     public function index()
     {
-        $wards = Ward::paginate(10);
+        $wards = Ward::all();
+        /* $wards = Ward::paginate(10); */
 
         return Inertia::render('Drugdept/ward/index', [
             'data' => WardResource::collection($wards),
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('drugDept.ward.create');
     }
 
     /**
@@ -36,36 +29,20 @@ class WardController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'ward_name' => 'required|string|max:255',
-            'ward_description' => 'required|string',
-            'ward_capacity' => 'numeric|nullable',
-            'ward_status' => 'nullable',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'capacity' => 'numeric|nullable',
+            'status' => 'nullable',
         ]);
 
         Ward::create([
-            'ward_name' => $request->ward_name,
-            'ward_description' => $request->ward_description,
-            'ward_capacity' => $request->ward_capacity,
-            'ward_status' => $request->ward_status == true ? 1 : 0,
+            'ward_name' => $request->name,
+            'ward_description' => $request->description,
+            'ward_capacity' => $request->capacity,
+            'ward_status' => $request->status == true ? 1 : 0,
         ]);
 
-        return redirect('/wards')->with('success', 'Ward created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ward $ward)
-    {
-        return view('drugDept.ward.show', compact('ward'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ward $ward)
-    {
-        return view('drugDept.ward.edit', compact('ward'));
+        return redirect()->back()->with('success', 'Ward created successfully.');
     }
 
     /**
@@ -74,17 +51,17 @@ class WardController extends Controller
     public function update(Request $request, Ward $ward)
     {
         $request->validate([
-            'ward_name' => 'required|string|max:255',
-            'ward_description' => 'required|string',
-            'ward_capacity' => 'numeric|nullable',
-            'ward_status' => 'nullable',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'capacity' => 'numeric|nullable',
+            'status' => 'nullable',
         ]);
 
         $ward->update([
-            'ward_name' => $request->ward_name,
-            'ward_description' => $request->ward_description,
-            'ward_capacity' => $request->ward_capacity,
-            'ward_status' => $request->ward_status == true ? 1 : 0,
+            'ward_name' => $request->name,
+            'ward_description' => $request->description,
+            'ward_capacity' => $request->capacity,
+            'ward_status' => $request->status == true ? 1 : 0,
         ]);
 
         return redirect('/wards')->with('success', 'Ward updated successfully.');

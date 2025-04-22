@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+// pages/Wards/Index.jsx
+import React, { useMemo } from 'react';
 import { Head } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/app-layout';

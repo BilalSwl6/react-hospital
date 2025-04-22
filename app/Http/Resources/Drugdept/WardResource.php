@@ -18,6 +18,7 @@ class WardResource extends JsonResource
             'id' => $this->id,
             'name' => $this->ward_name,
             'description' => $this->ward_description,
+            'capacity' => $this->ward_capacity,
             'status' => $this->ward_status,
         ];
     }
