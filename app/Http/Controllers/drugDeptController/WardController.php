@@ -15,8 +15,8 @@ class WardController extends Controller
      */
     public function index()
     {
-        $wards = Ward::all();
-        /* $wards = Ward::paginate(10); */
+        // $wards = Ward::all();
+        $wards = Ward::paginate(10);
 
         return Inertia::render('Drugdept/ward/index', [
             'data' => WardResource::collection($wards),

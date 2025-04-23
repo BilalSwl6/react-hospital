@@ -10,7 +10,7 @@ import {
     Table as TanstackTable,
     useReactTable,
 } from '@tanstack/react-table';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Pagination from '@/components/table/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -38,6 +38,13 @@ type DataTableProps<TData, TValue> = {
     pagination?: PaginationType;
     className?: string;
     button?: React.ReactNode;
+    searchable?: boolean;
+    search_placeholder?: string;
+    search_value?: string;
+    search_column?: string; // Which column to search in
+    onSearch?: (value: string) => void;
+    search_route?: string; // Optional now since we support both client and server-side search
+    searchDebounceMs?: number; // Debounce time for search input
 };
 
 function DataTable<TData, TValue>({
@@ -45,10 +52,41 @@ function DataTable<TData, TValue>({
     data,
     pagination,
     className,
-    button
+    button,
+    searchable = false,
+    search_placeholder = "Search...",
+    search_value: initialSearchValue = "",
+    search_column = "name", // Default column to search
+    onSearch,
+    // search_route,
+    searchDebounceMs = 300,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [searchInput, setSearchInput] = useState(initialSearchValue);
+    
+    // Set up debounced search
+    useEffect(() => {
+        if (!searchable) return;
+        
+        const timer = setTimeout(() => {
+            // If onSearch is provided, use it (likely for server-side search)
+            if (onSearch) {
+                onSearch(searchInput);
+            } 
+            // Otherwise use client-side filtering
+            else if (search_column) {
+                setColumnFilters([
+                    {
+                        id: search_column,
+                        value: searchInput,
+                    },
+                ]);
+            }
+        }, searchDebounceMs);
+        
+        return () => clearTimeout(timer);
+    }, [searchInput, onSearch, search_column, searchable, searchDebounceMs]);
 
     const table = useReactTable({
         columns,
@@ -65,14 +103,50 @@ function DataTable<TData, TValue>({
         },
     });
 
+    // Handler for search input changes
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value);
+    };
+
     return (
-        <div className={`w-full ${className || ""}`}>
-            {/* Conditionally render button if provided */}
-            {button && (
+        <div className={`w-full p-2 ${className || ""}`}>
+            {/* Search input rendering with better styling */}
+            {searchable && (
+                <div className="mb-4 flex items-center justify-between">
+                    <div className="relative w-72">
+                        <input
+                            type="text"
+                            placeholder={search_placeholder}
+                            value={searchInput}
+                            onChange={handleSearchChange}
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                        {searchInput && (
+                            <button 
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                onClick={() => setSearchInput("")}
+                                aria-label="Clear search"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+                    {button && <div>{button}</div>}
+                </div>
+            )}
+            
+            {/* Button-only row when search is disabled but button exists */}
+            {!searchable && button && (
                 <div className="mb-4 flex items-center justify-between">
                     {button}
                 </div>
             )}
+
+            {/* Advance option */}
+            
             {/* Table component */}
             <div className="overflow-hidden rounded-md border border-border shadow-sm">
                 <Table className="w-full">
@@ -116,7 +190,7 @@ function DataTable<TData, TValue>({
                 </Table>
             </div>
 
-            {/* Conditionally show pagination with proper spacing */}
+            {/* Pagination */}
             {pagination && (
                 <div className="mt-4">
                     <Pagination table={table as TanstackTable<TData>} pagination={pagination} />

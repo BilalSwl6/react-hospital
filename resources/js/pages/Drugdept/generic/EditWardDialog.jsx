@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import WardForm from './WardForm';
+import WardForm from './GenericForm';
 import { Pencil } from 'lucide-react';
 
 const EditWardDialog = ({ ward }) => {

@@ -7,7 +7,9 @@ export default function AuthLayout({ children, title, description, ...props }: {
             { /*
             <MessageBox />
             */ }
+            <main className='p-2'>
             {children}
+            </main>
         </AuthLayoutTemplate>
     );
 }

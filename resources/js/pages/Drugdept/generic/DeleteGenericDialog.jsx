@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 
-const DeleteWardDialog = ({ ward }) => {
+const DeleteDialog = ({ generic }) => {
   const [open, setOpen] = React.useState(false);
   const { delete: destroy, processing } = useForm();
 
@@ -21,7 +21,7 @@ const DeleteWardDialog = ({ ward }) => {
   };
 
   const handleDelete = () => {
-    destroy(route('wards.destroy', ward.id), {
+    destroy(route('generics.destroy', generic.id), {
       onSuccess: () => closeModal(),
     });
   };
@@ -36,9 +36,9 @@ const DeleteWardDialog = ({ ward }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Delete Ward</DialogTitle>
+          <DialogTitle>Delete Generic name</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the ward "{ward.name}"? This action cannot be undone.
+            Are you sure you want to delete the generic name "{generic.name}"? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex items-center justify-end space-x-2 pt-4">
@@ -46,7 +46,7 @@ const DeleteWardDialog = ({ ward }) => {
             Cancel
           </Button>
           <Button variant="destructive" onClick={handleDelete} disabled={processing}>
-            Delete Ward
+            Delete Generic name
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -54,4 +54,4 @@ const DeleteWardDialog = ({ ward }) => {
   );
 };
 
-export default DeleteWardDialog;
+export default DeleteDialog;

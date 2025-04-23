@@ -5,6 +5,7 @@ namespace App\Http\Controllers\drugDeptController;
 use App\Http\Controllers\Controller;
 use App\Models\Generic;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class GenericController extends Controller
 {
@@ -26,15 +27,7 @@ class GenericController extends Controller
 
         $generics = $query->orderBy('generic_name')->paginate(25);
 
-        return view('drugDept.generic.index')->with('generics', $generics);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('drugDept.generic.create');
+        return Inertia::render('Drugdept/generic/index')->with('data', $generics);
     }
 
     /**
@@ -63,22 +56,6 @@ class GenericController extends Controller
         ]);
 
         return redirect('/generics')->with('success', 'Generic created successfully.');
-    }
-
-    /**_
-     * Display the specified resource.
-     */
-    public function show(Generic $generic)
-    {
-        return view('drugDept.generic.show', compact('generic'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Generic $generic)
-    {
-        return view('drugDept.generic.edit', compact('generic'));
     }
 
     /**

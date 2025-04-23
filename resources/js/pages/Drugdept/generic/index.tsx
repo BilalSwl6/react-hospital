@@ -8,24 +8,29 @@ import DataTable from '@/components/table/data-table';
 import { type BreadcrumbItem } from '@/types';
 import CreateWardDialog from './CreateWardDialog';
 import EditWardDialog from './EditWardDialog';
-import DeleteWardDialog from './DeleteWardDialog';
-import WardStatusBadge from './WardStatusBadge';
+import DeleteDialog from './DeleteGenericDialog';
+import GenericStatusBadge from './GenericStatusBadge'
+import { PaginationProps } from '@/components/table/pagination'
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Wards', href: '/wards' },
+  { title: 'Generic', href: '/generics' },
 ];
 
 interface Ward {
   id: number;
   name: string;
   description: string;
-  capacity: number;
+  category: string;
+  sub_category: string;
+  therapeutic_class: string;
+  notes: string;
   status: number;
 }
 
 interface PageProps {
   data: {
     data: Ward[];
+    pagination: PaginationProps;
   };
 }
 
@@ -48,20 +53,9 @@ const WardIndex = ({ data }: PageProps) => {
       ),
     },
     {
-      accessorKey: 'capacity',
-      header: ({ column }) => <ColumnHeader column={column} title="Capacity" />,
-      cell: ({ row }) => {
-        const capacity = row.original.capacity;
-        const capacityText = capacity > 0 ? `${capacity} beds` : 'No capacity/Not set';
-        return (
-          <div className="text-sm">{capacityText}</div>
-        );
-      },
-    },
-    {
       accessorKey: 'status',
       header: ({ column }) => <ColumnHeader column={column} title="Status" />,
-      cell: ({ row }) => <WardStatusBadge status={row.original.status} />,
+      cell: ({ row }) => <GenericStatusBadge status={row.original.status} />,
     },
     {
       id: 'actions',
@@ -69,7 +63,7 @@ const WardIndex = ({ data }: PageProps) => {
       cell: ({ row }) => (
         <div className="flex gap-2">
           <EditWardDialog ward={row.original} />
-          <DeleteWardDialog ward={row.original} />
+          <DeleteDialog generic={row.original} />
         </div>
       ),
     },
@@ -89,6 +83,8 @@ const WardIndex = ({ data }: PageProps) => {
             <DataTable
               data={data.data}
               columns={columns}
+              search_route={route('generics.index')}
+              // pagination={data.pagination}
             />
           </div>
         </div>

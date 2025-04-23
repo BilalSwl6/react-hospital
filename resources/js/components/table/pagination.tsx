@@ -10,9 +10,7 @@ import {
 } from "@/components/ui/pagination";
 import { router } from "@inertiajs/react";
 
-interface PaginationProps<TData> {
-  table: Table<TData>;
-  pagination: {
+export interface PaginationProps {
     current_page: number;
     last_page: number;
     total: number;
@@ -25,12 +23,15 @@ interface PaginationProps<TData> {
       active: boolean;
     }>;
     path: string;
-  };
 }
 
-function Pagination<TData>({ pagination }: PaginationProps<TData>) {
+interface PageProps<TData> {
+  table: Table<TData>;
+  pagination: PaginationProps;
+}
 
-    console.log(pagination)
+function Pagination<TData>({ pagination }: PageProps<TData>) {
+
   const navigateToPage = (url: string | null) => {
     if (!url) return;
     const urlObj = new URL(url);
@@ -47,7 +48,7 @@ function Pagination<TData>({ pagination }: PaginationProps<TData>) {
     <div className="flex flex-col sm:flex-row items-center justify-between mt-6 mb-10 gap-4 sm:gap-6">
       {/* Total Results */}
       <div className="text-xs sm:text-sm text-muted-foreground">
-        Showing <span className="font-medium">{pagination.from}</span> to{" "}
+        Showing <span className="font-medium">{pagination.to}</span> to{" "}
         <span className="font-medium">{pagination.to}</span> of{" "}
         <span className="font-medium">{pagination.total}</span> results
       </div>
@@ -73,6 +74,7 @@ function Pagination<TData>({ pagination }: PaginationProps<TData>) {
               if (index === 0 || index === pagination.links.length - 1) return null;
 
               const label = parseLabel(link.label);
+              {/* add ellipsis if link is more than 2 */}
               if (label === "...") {
                 return (
                   <PaginationItem key={index}>

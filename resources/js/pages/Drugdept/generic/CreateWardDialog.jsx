@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import WardForm from './WardForm';
+import GenericForm from './GenericForm';
 import { Plus } from 'lucide-react';
 
 const CreateWardDialog = () => {
@@ -23,21 +23,21 @@ const CreateWardDialog = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Ward
+          Add Generic
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create New Ward</DialogTitle>
+          <DialogTitle>Create New Generic name</DialogTitle>
           <DialogDescription>
-            Add a new ward to the hospital management system.
+            Add a new Generic name to the hospital management system.
           </DialogDescription>
         </DialogHeader>
-        <WardForm closeModal={closeModal} />
+        <GenericForm closeModal={closeModal} />
       </DialogContent>
     </Dialog>
   );
 };
 
-export default CreateWardDialog;
+export default CreateGenericDialog;
 

@@ -1,17 +1,20 @@
-// components/ward/WardForm.jsx
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import InputError from '@/components/input-error';
 import { useForm } from '@inertiajs/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
-const WardForm = ({ ward = {}, closeModal, isEditing = false }) => {
+const GenericForm = ({ generic = {}, closeModal, isEditing = false }) => {
   const defaultData = {
-    name: ward.name || '',
-    description: ward.description || '',
-    capacity: ward.capacity || 0,
-    status: ward.status !== undefined ? ward.status : 1,
+    name: generic.name || '',
+    description: generic.description || '',
+    category: generic.category || '',
+    sub_category: generic.sub_category || '',
+    therapeutic_class: generic.therapeutic_class || '',
+    notes: generic.notes || '',
+    status: generic.status !== undefined ? generic.status : 1,
   };
 
   const { data, setData, post, put, processing, errors } = useForm(defaultData);
@@ -20,11 +23,11 @@ const WardForm = ({ ward = {}, closeModal, isEditing = false }) => {
     e.preventDefault();
 
     if (isEditing) {
-      put(route('wards.update', ward.id), {
+      put(route('generics.update', ward.id), {
         onSuccess: () => closeModal(),
       });
     } else {
-      post(route('wards.store'), {
+      post(route('generics.store'), {
         onSuccess: () => closeModal(),
       });
     }
@@ -34,7 +37,7 @@ const WardForm = ({ ward = {}, closeModal, isEditing = false }) => {
     <form onSubmit={handleSubmit}>
       <div className="mb-4">
         <Label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-700">
-          Ward Name
+          Generic Name
         </Label>
         <Input
           type="text"
@@ -63,18 +66,59 @@ const WardForm = ({ ward = {}, closeModal, isEditing = false }) => {
       </div>
 
       <div className="mb-4">
-        <Label htmlFor="capacity" className="block mb-2 text-sm font-medium text-gray-700">
-          Capacity
+        <Label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-700">
+          Category
         </Label>
         <Input
-          type="number"
-          id="capacity"
-          value={data.capacity}
-          onChange={(e) => setData('capacity', parseInt(e.target.value, 10) || 0)}
+          type="text"
+          id="category"
+          value={data.category}
+          onChange={(e) => setData('category', e.target.value)}
+          className="mt-1 block w-full"
+        />
+        <InputError message={errors.category} className="mt-2" />
+      </div>
+
+      <div className="mb-4">
+        <Label htmlFor="sub_category" className="block mb-2 text-sm font-medium text-gray-700">
+          Sub Category
+        </Label>
+        <Input
+          type="text"
+          id="sub_category"
+          value={data.sub_category}
+          onChange={(e) => setData('sub_category', e.target.value)}
+          className="mt-1 block w-full"
+        />
+        <InputError message={errors.sub_category} className="mt-2" />
+      </div>
+
+      <div className="mb-4">
+        <Label htmlFor="therapeutic_class" className="block mb-2 text-sm font-medium text-gray-700">
+          Therapeutic Class
+        </Label>
+        <Input
+          type="text"
+          id="therapeutic_class"
+          value={data.therapeutic_class}
+          onChange={(e) => setData('therapeutic_class', e.target.value)}
           className="mt-1 block w-full"
           required
         />
-        <InputError message={errors.capacity} className="mt-2" />
+        <InputError message={errors.therapeutic_class} className="mt-2" />
+      </div>
+
+      <div className="mb-4">
+        <Label htmlFor="notes" className="block mb-2 text-sm font-medium text-gray-700">
+          Notes
+        </Label>
+        <Textarea
+          id="notes"
+          value={data.notes}
+          onChange={(e) => setData('notes', parseInt(e.target.value, 10) || 0)}
+          className="mt-1 block w-full"
+        />
+        <InputError message={errors.notes} className="mt-2" />
       </div>
 
       <div className="mb-4">
@@ -101,13 +145,11 @@ const WardForm = ({ ward = {}, closeModal, isEditing = false }) => {
           Cancel
         </Button>
         <Button type="submit" disabled={processing}>
-          {isEditing ? 'Update Ward' : 'Create Ward'}
+          {isEditing ? 'Update Generic' : 'Create Generic name'}
         </Button>
       </div>
     </form>
   );
 };
 
-export default WardForm;
-
-
+export default GenericForm;

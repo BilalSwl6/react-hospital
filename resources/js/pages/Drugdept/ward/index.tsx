@@ -9,6 +9,8 @@ import CreateWardDialog from './CreateWardDialog';
 import EditWardDialog from './EditWardDialog';
 import DeleteWardDialog from './DeleteWardDialog';
 import WardStatusBadge from './WardStatusBadge';
+import { PaginationProps } from '@/components/table/pagination'
+import { Button } from '@/components/ui/button';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Wards', href: '/wards' },
@@ -25,10 +27,12 @@ interface Ward {
 interface PageProps {
   data: {
     data: Ward[];
+    meta: PaginationProps;
   };
 }
 
 const WardIndex = ({ data }: PageProps) => {
+
   const columns = useMemo<ColumnDef<Ward>[]>(() => [
     {
       accessorKey: 'name',
@@ -83,11 +87,19 @@ const WardIndex = ({ data }: PageProps) => {
           <CreateWardDialog />
         </div>
 
-        <div className="rounded-lg border shadow-sm">
+        <div className="rounded-lg shadow-sm">
           <div className="overflow-x-auto">
             <DataTable
               data={data.data}
               columns={columns}
+              pagination={data.meta}
+              searchable
+              search_route={route('wards.index')}
+              button={
+                <>
+                <Button>Click me</Button>
+                </>
+              }
             />
           </div>
         </div>
