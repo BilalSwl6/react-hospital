@@ -5,10 +5,11 @@ import AppLayout from '@/layouts/app-layout';
 import { ColumnHeader } from '@/components/table/column-header';
 import DataTable from '@/components/table/data-table';
 import { type BreadcrumbItem } from '@/types';
-import CreateGenericDialog from './CreateGenericDialog';
-import EditGenericDialog from './EditGenericDialog';
-import DeleteDialog from './DeleteGenericDialog';
-import GenericStatusBadge from './GenericStatusBadge';
+import CreateMedicineDialog from './CreateMedicineDialog';
+import EditMedicineDialog from './EditMedicineDialog';
+import DeleteDialog from './DeleteMedicineDialog';
+import MedicineStatusBadge from './MedicineStatusBadge';
+import StockDialog from './StockDialog';
 import { PaginationProps } from '@/components/table/pagination';
 import { CircleHelp } from 'lucide-react';
 import {
@@ -19,32 +20,50 @@ import {
 } from "@/components/ui/tooltip";
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Generic', href: '/generics' },
+    { title: 'Total Items / Medicine', href: '/medicines' },
 ];
 
-interface Generic {
+export interface Medicine {
     id: number;
     name: string;
     description: string;
-    category: string;
-    sub_category: string;
-    therapeutic_class: string;
+    generic_id: string | [];
+    generic_name: string;
+    quantity: number;
+    total_quantity: number;
+    price: number;
+    batch_no: string;
+    dosage: string;
+    strength: string;
+    route: string;
     notes: string;
-    status: number;
+    expiry_date: string;
+    category: string;
+    manufacturer: string;
+    status: string;
+    image: string;
 }
 
 interface PageProps {
     data: {
-        data: Generic[];
+        data: Medicine[];
         meta: PaginationProps;
     };
+    generics: {
+        id: string;
+        name: string;
+    }[];
 }
 
-const GenericIndex = ({ data }: PageProps) => {
-    const columns = useMemo<ColumnDef<Generic>[]>(() => [
+const MedicineIndex = ({ data, generics }: PageProps) => {
+
+    console.log('generics:', generics);
+    console.log('data:', data);
+
+    const columns = useMemo<ColumnDef<Medicine>[]>(() => [
         {
             accessorKey: 'name',
-            header: ({ column }) => <ColumnHeader column={column} title="Generic Name" />,
+            header: ({ column }) => <ColumnHeader column={column} title="Item Name" />,
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <div className="text-sm text-muted-foreground">{row.original.name}</div>
@@ -90,26 +109,48 @@ const GenericIndex = ({ data }: PageProps) => {
             },
         },
         {
-            id: 'category_subcategory',
-            header: ({ column }) => <ColumnHeader column={column} title="Category and Sub Category" />,
+            id: 'generic_id',
+            accessorKey: 'generic_name',
+            header: ({ column }) => <ColumnHeader column={column} title="Generic Name" />,
             cell: ({ row }) => (
-                <div className="text-sm text-muted-foreground">
-                    {row.original.category} / {row.original.sub_category}
-                </div>
+                <div className="text-sm text-muted-foreground">{row.original.generic_name}</div>
             ),
+        },
+        {
+            id: 'quantity',
+            accessorKey: 'quantity',
+            header: ({ column }) => <ColumnHeader column={column} title="Quantity" />,
+            cell: ({ row }) => {
+                const quantity = row.original.quantity || 0;
+                const totalQuantity = row.original.total_quantity || 0;
+                const isLowStock = quantity < totalQuantity * 0.2;
+                const zeroQuantity = quantity <= 0;
+                return (
+                    <div className={`text-sm ${isLowStock ? 'text-red-500' : 'text-muted-foreground'}`}>
+                        {zeroQuantity ? (
+                            <span className="text-red-500">Out of Stock</span>
+                        ) : (
+                                <span>{quantity}</span>
+                            )}
+                    </div>
+                );
+            }
         },
         {
             accessorKey: 'status',
             header: ({ column }) => <ColumnHeader column={column} title="Status" />,
-            cell: ({ row }) => <GenericStatusBadge status={row.original.status} />,
+            cell: ({ row }) => <MedicineStatusBadge status={row.original.status} />,
         },
         {
             id: 'actions',
             header: ({ column }) => <ColumnHeader column={column} title="Actions" />,
             cell: ({ row }) => (
-                <div className="flex gap-2">
-                    <EditGenericDialog generic={row.original} />
-                    <DeleteDialog generic={row.original} />
+                <div className="flex gap-3">
+                    <EditMedicineDialog medicine={row.original} generic={generics} />
+                    <StockDialog medicine={row.original} />
+                    { /*
+                    <DeleteDialog medicine={row.original} />
+                    */ }
                 </div>
             ),
         },
@@ -117,11 +158,11 @@ const GenericIndex = ({ data }: PageProps) => {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Generics" />
+            <Head title="Medicine & Surgical Items" />
             <div className="container mx-auto py-6">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold">Generics Management</h1>
-                    <CreateGenericDialog />
+                    <h1 className="text-2xl font-bold">Medicines Management</h1>
+                    <CreateMedicineDialog generic={generics} />
                 </div>
 
                 <div className="rounded-lg border shadow-sm">
@@ -129,7 +170,7 @@ const GenericIndex = ({ data }: PageProps) => {
                         <DataTable
                             data={data.data}
                             columns={columns}
-                            search_route={route('generics.index')}
+                            search_route={route('medicines.index')}
                             pagination={data.meta}
                         />
                     </div>
@@ -139,4 +180,4 @@ const GenericIndex = ({ data }: PageProps) => {
     );
 };
 
-export default GenericIndex;
+export default MedicineIndex;

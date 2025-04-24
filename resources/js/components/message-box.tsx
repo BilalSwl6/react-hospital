@@ -10,9 +10,9 @@ export default function MessageBox() {
     } = usePage<SharedData>().props;
 
     useEffect(() => {
-        if (success) toast.success(success);
-        if (error) toast.error(error);
-        if (warning) toast.warning(warning);
+        if (success) toast(success);
+        if (error) toast(error);
+        if (warning) toast(warning);
         if (info) toast.info(info);
     }, [success, error, warning, info]);
 

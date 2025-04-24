@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
+use Inertia\Inertia;
+use App\Http\Resources\Drugdept\Medicine\MedicineResource;
+use App\Http\Resources\Drugdept\Generic\GetGenericResource;
 
 class MedicineController extends Controller
 {
@@ -33,15 +36,17 @@ class MedicineController extends Controller
         }
 
         $medicines = $query->orderBy('name')->paginate(25);
+        $generics = Generic::all();
 
-        return view('drugDept.medicine.index', [
-            'medicines' => $medicines,
+        return Inertia::render('Drugdept/medicine/index', [
+            'data' => MedicineResource::collection($medicines),
+            'generics' => GetGenericResource::collection($generics),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
-     */
+     *
     public function create()
     {
         $generics = Generic::all()->where('generic_status', 1);
@@ -113,18 +118,9 @@ class MedicineController extends Controller
     public function show(Medicine $medicine)
     {
         $medicine = Medicine::with('generic')->find($medicine->id);
-
-        return view('drugDept.medicine.show', compact('medicine'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Medicine $medicine)
-    {
-        $generics = Generic::all()->where('generic_status', 1);
-
-        return view('drugDept.medicine.edit', compact('medicine', 'generics'));
+        /*return Inertia::render('Drugdept/medicine/show', [*/
+        /*    'medicine' => new MedicineResource($medicine),*/
+        /*]);*/
     }
 
     /**
@@ -241,56 +237,59 @@ class MedicineController extends Controller
     /**
      * Add stock to the specified medicine.
      */
+
     public function AddStock(Request $request, Medicine $medicine)
     {
         $request->validate([
-            'quantity' => 'required|integer',
+            'quantity' => 'required|integer|min:1',
             'log_type' => 'required|string|max:255',
             'expiry_date' => 'nullable|date',
             'date' => 'required|date',
             'notes' => 'nullable|string|max:255',
-            'medicine_id' => 'required|integer',
         ]);
 
         try {
             DB::beginTransaction();
 
-            if ($request->log_type == 'approve') {
-                $medicine->increment('quantity', $request->quantity);
-                if ($request->expiry_date) {
+            $quantity = $request->quantity;
+
+            if ($request->log_type === 'approve') {
+                $medicine->increment('quantity', $quantity);
+                $medicine->total_quantity = ($medicine->total_quantity ?? 0) + $quantity;
+
+                if ($request->filled('expiry_date')) {
                     $medicine->expiry_date = $request->expiry_date;
                 }
-                $medicine->total_quantity += $request->quantity;
-            } elseif ($request->log_type == 'return') {
-                $medicine->decrement('quantity', $request->quantity);
-                $medicine->total_quantity -= $request->quantity;
+            } elseif ($request->log_type === 'return') {
+                if ($medicine->quantity < $quantity) {
+                    return redirect()->back()->with('error', 'Cannot return more stock than available.');
+                }
+
+                $medicine->decrement('quantity', $quantity);
+                $medicine->total_quantity = max(($medicine->total_quantity ?? 0) - $quantity, 0);
+            } else {
+                return redirect()->back()->with('error', 'Invalid log type.');
             }
 
             $medicine->save();
 
-            $medicineLog = Medicine_log::create([
+            Medicine_log::create([
                 'log_type' => $request->log_type,
-                'medicine_id' => $request->medicine_id,
-                'quantity' => $request->quantity,
+                'medicine_id' => $medicine->id,
+                'quantity' => $quantity,
                 'date' => $request->date,
                 'notes' => $request->notes,
             ]);
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Stock updated successfully.',
-                'new_quantity' => $medicine->quantity,
-                'log' => $medicineLog,
-            ]);
+            return redirect()->back()->with('success', 'Stock updated successfully.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Database error: ' . $e->getMessage());
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred: '.$e->getMessage(),
-            ], 500);
+            return redirect()->back()->with('error', 'Unexpected error: ' . $e->getMessage());
         }
     }
 
