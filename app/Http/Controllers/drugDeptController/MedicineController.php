@@ -36,7 +36,7 @@ class MedicineController extends Controller
         }
 
         $medicines = $query->orderBy('name')->paginate(25);
-        $generics = Generic::all();
+        $generics = Generic::select('id', 'generic_name')->where('generic_status', 1)->get();
 
         return Inertia::render('Drugdept/medicine/index', [
             'data' => MedicineResource::collection($medicines),
@@ -64,6 +64,7 @@ class MedicineController extends Controller
             'description' => 'nullable',
             'generic_id' => 'required|integer',
             'price' => 'nullable|integer',
+            'quantity' => 'nullable|integer',
             'batch_no' => 'nullable|string|max:255',
             'strength' => 'nullable|string|max:255',
             'route' => 'nullable|string|max:255',
@@ -91,6 +92,8 @@ class MedicineController extends Controller
                 'description' => $request->description,
                 'generic_id' => $request->generic_id,
                 'price' => $request->price,
+                'quantity' => 0,
+                'total_quantity' => 0,
                 'batch_no' => $request->batch_no,
                 'strength' => $request->strength,
                 'route' => $request->route,
@@ -118,9 +121,10 @@ class MedicineController extends Controller
     public function show(Medicine $medicine)
     {
         $medicine = Medicine::with('generic')->find($medicine->id);
-        /*return Inertia::render('Drugdept/medicine/show', [*/
-        /*    'medicine' => new MedicineResource($medicine),*/
-        /*]);*/
+        return response()->json([
+            'success' => true,
+            'medicine' => $medicine,
+        ]);
     }
 
     /**
@@ -132,7 +136,6 @@ class MedicineController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable',
             'generic_id' => 'required|integer',
-            'quantity' => 'nullable|integer',
             'price' => 'nullable|integer',
             'batch_no' => 'nullable|string|max:255',
             'dosage' => 'nullable|string|max:255',
@@ -164,7 +167,6 @@ class MedicineController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'generic_id' => $request->generic_id,
-                'quantity' => $request->quantity,
                 'price' => $request->price,
                 'batch_no' => $request->batch_no,
                 'dosage' => $request->dosage,
@@ -226,14 +228,36 @@ class MedicineController extends Controller
     /**
      * View Logs of Spacific Medicine
      */
-    public function logs(Medicine $medicine)
+    public function logs(Medicine $medicine, Request $request)
     {
+        $request->validate([
+            'per_page' => 'nullable|integer',
+            'page' => 'nullable|integer',
+        ]);
+
+        $per_page = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+
         $medicine = Medicine::with('generic')->find($medicine->id);
-        $medicineLogs = Medicine_log::query()->where('medicine_id', $medicine->id)->orderBy('id', 'desc')->get();
+        $medicineLogs = Medicine_log::query()
+            ->where('medicine_id', $medicine->id)
+            ->orderBy('id', 'desc')
+            ->skip(($page - 1) * $per_page)
+            ->take($per_page)
+            ->get();
 
-        return view('drugDept.medicine.logs', compact('medicine', 'medicineLogs'));
+        // Count total records for pagination info
+        $totalLogs = Medicine_log::where('medicine_id', $medicine->id)->count();
+        $hasMore = ($page * $per_page) < $totalLogs;
+
+        return response()->json([
+            'success' => true,
+            'per_page' => $per_page,
+            'current_page' => $page,
+            'has_more' => $hasMore,
+            'logs' => $medicineLogs,
+        ]);
     }
-
     /**
      * Add stock to the specified medicine.
      */
@@ -349,7 +373,7 @@ class MedicineController extends Controller
         $filePath = $this->excelExportService->export($data, $headers, 'medicines.xlsx');
 
         // Return the file as a download response
-        return Response::download($filePath, 'medicines.xlsx')->deleteFileAfterSend(true);
+        return Response::download($filePath, 'medicines_' . date('Y-m-d') . '.xlsx')->deleteFileAfterSend(true);
     }
 
     /**
@@ -389,6 +413,8 @@ class MedicineController extends Controller
                 return [
                     'id' => $medicine->id,
                     'text' => $this->formatMedicineText($medicine, $genericName),
+                    'value' => $medicine->id, // Add value field for react-select
+                    'label' => $this->formatMedicineText($medicine, $genericName), // Add label field for react-select
                     'medicine_name' => $medicine->name,
                     'generic_name' => $genericName,
                     'category' => $medicine->category ?? 'N/A',
@@ -414,16 +440,11 @@ class MedicineController extends Controller
         }
     }
 
-    /**
-     * Format the medicine text display
-     *
-     * @param  Medicine  $medicine
-     * @param  string  $genericName
-     */
-    private function formatMedicineText($medicine, $genericName): string
+    // Make sure you have this helper method defined in your controller
+    private function formatMedicineText($medicine, $genericName)
     {
         return sprintf(
-            '%s (%s) - %s (%s) - %s',
+            "%s (%s) - %s (%s) - %s",
             $medicine->name,
             $genericName,
             $medicine->category ?? 'N/A',
@@ -431,4 +452,5 @@ class MedicineController extends Controller
             $medicine->route ?? 'N/A'
         );
     }
+
 }

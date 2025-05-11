@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             WardSeeder::class,
             GenericSeeder::class,
             MedicineSeeder::class,
+            ExpenseSeeder::class,
+            ExpenseRecordSeeder::class,
         ]);
     }
 }

@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('generics', GenericController::class);
     Route::resource('expenseRecord', ExpenseRecordController::class);
     Route::post('expense/export-to-excel', [ExpenseController::class, 'exportToExcel'])->name('expense.export-to-excel');
+    Route::get('expense/export', [ExpenseController::class, 'ExportExcelView' ])->name('expense.export');
     Route::resource('expense', ExpenseController::class);
     Route::get('expenseRecord/create/{expense_id}', [ExpenseRecordController::class, 'create'])->name('expenseRecord.create');
     Route::put('expenseRecord/{id}', [ExpenseRecordController::class, 'update'])->name('expenseRecord.update');

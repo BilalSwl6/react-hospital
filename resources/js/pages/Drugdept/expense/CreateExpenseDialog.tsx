@@ -8,19 +8,15 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import MedicineForm from './MedicineForm';
-import { Pencil } from 'lucide-react';
-import { Medicine } from './index';
+import ExpenseForm from './ExpenseForm';
+import { Plus } from 'lucide-react';
+import { Ward, Expense } from './index';
 
 interface PageProps {
-    generic: {
-        id: string;
-        name: string;
-    }[];
-    medicine: Medicine;
+    wards: Ward[];
 }
 
-const EditMedicineDialog = ({ generic, medicine }: PageProps) => {
+const CreateExpenseDialog = ({ wards }: PageProps) => {
     const [open, setOpen] = React.useState(false);
 
     const closeModal = () => {
@@ -30,22 +26,23 @@ const EditMedicineDialog = ({ generic, medicine }: PageProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="link" size="sm">
-                    <Pencil className="mr-1 h-3 w-3" />
-                    Edit
+                <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New Expense
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto custom-scrollbar">
                 <DialogHeader>
-                    <DialogTitle>Edit Generic</DialogTitle>
+                    <DialogTitle>Create New expense record</DialogTitle>
                     <DialogDescription>
-                        Update the Generic information.
+                        Add a date and selext ward to create new expense record.
                     </DialogDescription>
                 </DialogHeader>
-                <MedicineForm generics={generic} medicine={medicine} closeModal={closeModal} isEditing={true} />
+                <ExpenseForm wards={wards} closeModal={closeModal}  />
             </DialogContent>
         </Dialog>
     );
 };
 
-export default EditMedicineDialog;
+export default CreateExpenseDialog;
+

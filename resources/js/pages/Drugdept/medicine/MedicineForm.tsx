@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,8 +12,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-//import { InertiaMultiSelect } from '@/components/multi-select';
 import { Medicine } from './index';
+import { SelectInput } from '@/components/SelectInput';
 
 interface PageProps {
     medicine?: Medicine;
@@ -33,6 +33,15 @@ const MedicineForm = ({
     isEditing,
     generics,
 }: PageProps) => {
+    // Format the expiry date for the date input (YYYY-MM-DD)
+    const formatDateForInput = (dateString: string): string => {
+        if (!dateString) return '';
+
+        // Parse the ISO date and format it as YYYY-MM-DD
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+    };
+
     const defaultData = {
         name: medicine.name || '',
         description: medicine.description || '',
@@ -44,7 +53,7 @@ const MedicineForm = ({
         strength: medicine.strength || '',
         route: medicine.route || '',
         notes: medicine.notes || '',
-        expiry_date: medicine.expiry_date || '',
+        expiry_date: formatDateForInput(medicine.expiry_date || ''),
         category: medicine.category || '',
         manufacturer: medicine.manufacturer || '',
         status: medicine.status !== undefined ? medicine.status : 1,
@@ -67,6 +76,27 @@ const MedicineForm = ({
         }
     };
 
+    const routeOptions = [
+        { value: 'oral', label: 'Oral' },
+        { value: 'intravenous', label: 'Intravenous' },
+        { value: 'intramuscular', label: 'Intramuscular' },
+        { value: 'subcutaneous', label: 'Subcutaneous' },
+        { value: 'topical', label: 'Topical' },
+        { value: 'inhalation', label: 'Inhalation' },
+        { value: 'ophthalmic', label: 'Ophthalmic' },
+        { value: 'nasal', label: 'Nasal' },
+        { value: 'rectal', label: 'Rectal' },
+    ];
+
+    // RSelect expects value to be the full option object
+    const selectedRoute = routeOptions.find((option) => option.value === data.route);
+
+    // For debugging
+    useEffect(() => {
+        console.log('Original expiry date from server:', medicine.expiry_date);
+        console.log('Formatted expiry date for input:', data.expiry_date);
+    }, []);
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="mb-4">
@@ -75,6 +105,7 @@ const MedicineForm = ({
                     id="name"
                     value={data.name}
                     onChange={(e) => setData('name', e.target.value)}
+                    tabIndex={1}
                     required
                 />
                 <InputError message={errors.name} className="mt-2" />
@@ -86,6 +117,7 @@ const MedicineForm = ({
                     id="description"
                     value={data.description}
                     onChange={(e) => setData('description', e.target.value)}
+                    tabIndex={2}
                     required
                 />
                 <InputError message={errors.description} className="mt-2" />
@@ -93,19 +125,26 @@ const MedicineForm = ({
 
             <div className="mb-4">
                 <Label htmlFor="generic_id">Generic</Label>
-                { /*
-                <InertiaMultiSelect
+                <SelectInput
                     id="generic_id"
                     name="generic_id"
-                    staticOptions={generics.data}
-                    labelKey="name"
-                    valueKey="id"
-                    multiple={false}
+                    options={generics.data.map((generic) => ({
+                        value: generic.id,
+                        label: generic.name,
+                    }))}
+                    value={generics.data
+                        .map((generic) => ({
+                            value: generic.id,
+                            label: generic.name,
+                        }))
+                        .find((option) => option.value === data.generic_id)}
+                    onChange={(selectedOption) => {
+                        setData('generic_id', selectedOption?.value || '');
+                    }}
                     placeholder="Select Generic"
                     className={errors.generic_id ? "border-red-500" : ""}
-                    defaultValue={data.generic_id}
+                    tabIndex={3}
                 />
-                        */ }
                 <InputError message={errors.generic_id} className="mt-2" />
             </div>
 
@@ -117,22 +156,23 @@ const MedicineForm = ({
                     type="number"
                     value={data.price}
                     onChange={(e) => setData('price', e.target.value)}
+                    tabIndex={4}
                     placeholder="leave empty for free"
                 />
                 <InputError message={errors.price} className="mt-2" />
             </div>
-
             <div className="mb-4">
-            <Label htmlFor="quantity">Quantity</Label>
-            <Input
-                id="quantity"
-                type="number"
-                value={data.quantity}
-                onChange={(e) => setData('quantity', e.target.value)}
-                placeholder="add quantity after creating medicine"
-                disabled
-            />
-            <InputError message={errors.quantity} className="mt-2" />
+                <Label htmlFor="quantity">Quantity</Label>
+                <Input
+                    id="quantity"
+                    type="number"
+                    value={data.quantity}
+                    onChange={(e) => setData('quantity', e.target.value)}
+                    placeholder="add quantity after creating medicine"
+                    tabIndex={5}
+                    disabled
+                />
+                <InputError message={errors.quantity} className="mt-2" />
             </div>
 
             <div className="mb-4">
@@ -141,18 +181,21 @@ const MedicineForm = ({
                     id="batch_no"
                     value={data.batch_no}
                     onChange={(e) => setData('batch_no', e.target.value)}
+                    tabIndex={6}
                 />
                 <InputError message={errors.batch_no} className="mt-2" />
             </div>
 
             <div className="mb-4">
-            <Label htmlFor="dosage">Dosage</Label>
-            <Input
-                id="dosage"
-                value={data.dosage}
-                onChange={(e) => setData('dosage', e.target.value)}
-            />
-            <InputError message={errors.dosage} className="mt-2" />
+                <Label htmlFor="dosage">Dosage</Label>
+                <Input
+                    id="dosage"
+                    value={data.dosage}
+                    onChange={(e) => setData('dosage', e.target.value)}
+                    placeholder="e.g. 500mg/vial"
+                    tabIndex={7}
+                />
+                <InputError message={errors.dosage} className="mt-2" />
             </div>
 
             <div className="mb-4">
@@ -161,50 +204,41 @@ const MedicineForm = ({
                     id="strength"
                     value={data.strength}
                     onChange={(e) => setData('strength', e.target.value)}
+                    placeholder="e.g. 500mg"
+                    tabIndex={8}
                 />
                 <InputError message={errors.strength} className="mt-2" />
             </div>
 
             <div className="mb-4">
-            <Label htmlFor="route">Route</Label>
-                {/*
-            <InertiaMultiSelect
-                id="route"
-                name="route"
-                staticOptions={[
-                    { id: 'oral', name: 'Oral' },
-                    { id: 'intravenous', name: 'Intravenous' },
-                    { id: 'intramuscular', name: 'Intramuscular' },
-                    { id: 'subcutaneous', name: 'Subcutaneous' },
-                    { id: 'topical', name: 'Topical' },
-                    { id: 'inhalation', name: 'Inhalation' },
-                    { id: 'ophthalmic', name: 'Ophthalmic' },
-                    { id: 'nasal', name: 'Nasal' },
-                    { id: 'rectal', name: 'Rectal' },
-                ]}
-                labelKey="name"
-                valueKey="id"
-                creatable
-                multiple={false}
-                placeholder="Select Route"
-                className={errors.route ? "border-red-500" : ""}
-                defaultValue={data.route}
-            />
-                        */}
-            <InputError message={errors.route} className="mt-2" />
+                <Label htmlFor="route">Route</Label>
+                <SelectInput
+                    id="route"
+                    name="route"
+                    options={routeOptions}
+                    value={selectedRoute}
+                    onChange={(selectedOption) => {
+                        setData('route', selectedOption?.value || '');
+                    }}
+                    placeholder="Select Route"
+                    className={errors.route ? 'border-red-500' : ''}
+                    tabIndex={9}
+                />
+                <InputError message={errors.route} className="mt-2" />
             </div>
 
             <div className="mb-4">
-            <Label htmlFor="expiry_date">Expiry Date</Label>
-            <Input
-                id="expiry_date"
-                type="date"
-                value={data.expiry_date}
-                onChange={(e) => setData('expiry_date', e.target.value)}
-                min={new Date().toISOString().split('T')[0]} // Disable past dates
-                placeholder="add expiry date after creating medicine (optional)"
-            />
-            <InputError message={errors.expiry_date} className="mt-2" />
+                <Label htmlFor="expiry_date">Expiry Date</Label>
+                <Input
+                    id="expiry_date"
+                    type="date"
+                    value={data.expiry_date}
+                    onChange={(e) => setData('expiry_date', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]} // Disable past dates
+                    placeholder="add expiry date after creating medicine (optional)"
+                    tabIndex={10}
+                />
+                <InputError message={errors.expiry_date} className="mt-2" />
             </div>
 
             <div className="mb-4">
@@ -213,6 +247,7 @@ const MedicineForm = ({
                     id="manufacturer"
                     value={data.manufacturer}
                     onChange={(e) => setData('manufacturer', e.target.value)}
+                    tabIndex={11}
                 />
                 <InputError message={errors.manufacturer} className="mt-2" />
             </div>
@@ -223,6 +258,7 @@ const MedicineForm = ({
                     id="category"
                     value={data.category}
                     onChange={(e) => setData('category', e.target.value)}
+                    tabIndex={12}
                 />
                 <InputError message={errors.category} className="mt-2" />
             </div>
@@ -233,6 +269,7 @@ const MedicineForm = ({
                     id="notes"
                     value={data.notes}
                     onChange={(e) => setData('notes', e.target.value)}
+                    tabIndex={13}
                 />
                 <InputError message={errors.notes} className="mt-2" />
             </div>

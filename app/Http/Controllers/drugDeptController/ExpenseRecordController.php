@@ -9,6 +9,11 @@ use App\Models\Generic;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+use App\Http\Resources\Drugdept\Medicine\GetMedicineForExpenseResource;
+use App\Http\Resources\Drugdept\Generic\GetGenericResource;
+use App\Http\Resources\Drugdept\Expense\GetExpenseRecordResource;
+
 
 class ExpenseRecordController extends Controller
 {
@@ -23,15 +28,28 @@ class ExpenseRecordController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(Request $request, $expense_id)
     {
         $expense = Expense::findOrFail($request->expense_id);
-        $message = request('success');
+        if (!$expense) {
+            return redirect()->back()->with('error', 'Expense not found');
+        }
+        $message = $request->session()->get('error') ?? $request->session()->get('success') ?? $request->session()->get('info');
         $expense_id = request('expense_id');
         $medicines = Medicine::where('status', 1)->where('quantity', '>', 0)->orderBy('name')->get();
-        $generics = Generic::all();
+        $generics = Generic::select('id', 'generic_name')->orderBy('generic_name')->get();
 
-        return view('drugDept.expense.createRecord', compact('message', 'expense', 'expense_id', 'medicines', 'generics'));
+        return Inertia::render('Drugdept/expenseRecord/AddMedicine', [
+            'message' => $message,       // done
+            'expense' => [
+                'id' => $expense->id,
+                'ward_name' => $expense->ward->ward_name,
+                'date' => $expense->date,
+            ],
+            'expense_id' => $expense_id,        // done
+            'medicines' => GetMedicineForExpenseResource::collection($medicines),
+            'generics' => GetGenericResource::collection($generics),
+        ]);
     }
 
     /**

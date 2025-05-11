@@ -8,19 +8,16 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import MedicineForm from './MedicineForm';
+import ExpenseForm from './ExpenseForm';
 import { Pencil } from 'lucide-react';
-import { Medicine } from './index';
+import { Expense, Ward } from './index';
 
 interface PageProps {
-    generic: {
-        id: string;
-        name: string;
-    }[];
-    medicine: Medicine;
+    wards: Ward[];
+    expense: Expense;
 }
 
-const EditMedicineDialog = ({ generic, medicine }: PageProps) => {
+const EditExpenseDialog = ({ wards, expense }: PageProps) => {
     const [open, setOpen] = React.useState(false);
 
     const closeModal = () => {
@@ -37,15 +34,15 @@ const EditMedicineDialog = ({ generic, medicine }: PageProps) => {
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto custom-scrollbar">
                 <DialogHeader>
-                    <DialogTitle>Edit Generic</DialogTitle>
+                    <DialogTitle>Edit Expense record</DialogTitle>
                     <DialogDescription>
-                        Update the Generic information.
+                        Update the Expense record information.
                     </DialogDescription>
                 </DialogHeader>
-                <MedicineForm generics={generic} medicine={medicine} closeModal={closeModal} isEditing={true} />
+                <ExpenseForm wards={wards} expense={expense} closeModal={closeModal} isEditing={true} />
             </DialogContent>
         </Dialog>
     );
 };
 
-export default EditMedicineDialog;
+export default EditExpenseDialog;

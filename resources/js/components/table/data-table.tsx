@@ -4,7 +4,7 @@ import {
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
+    //getPaginationRowModel,
     getSortedRowModel,
     SortingState,
     Table as TanstackTable,
@@ -64,16 +64,16 @@ function DataTable<TData, TValue>({
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [searchInput, setSearchInput] = useState(initialSearchValue);
-    
+
     // Set up debounced search
     useEffect(() => {
         if (!searchable) return;
-        
+
         const timer = setTimeout(() => {
             // If onSearch is provided, use it (likely for server-side search)
             if (onSearch) {
                 onSearch(searchInput);
-            } 
+            }
             // Otherwise use client-side filtering
             else if (search_column) {
                 setColumnFilters([
@@ -84,7 +84,7 @@ function DataTable<TData, TValue>({
                 ]);
             }
         }, searchDebounceMs);
-        
+
         return () => clearTimeout(timer);
     }, [searchInput, onSearch, search_column, searchable, searchDebounceMs]);
 
@@ -92,7 +92,8 @@ function DataTable<TData, TValue>({
         columns,
         data,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        // will be used for server-side pagination
+        //getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnFiltersChange: setColumnFilters,
@@ -122,7 +123,7 @@ function DataTable<TData, TValue>({
                             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                         {searchInput && (
-                            <button 
+                            <button
                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 onClick={() => setSearchInput("")}
                                 aria-label="Clear search"
@@ -137,7 +138,7 @@ function DataTable<TData, TValue>({
                     {button && <div>{button}</div>}
                 </div>
             )}
-            
+
             {/* Button-only row when search is disabled but button exists */}
             {!searchable && button && (
                 <div className="mb-4 flex items-center justify-between">
@@ -146,7 +147,7 @@ function DataTable<TData, TValue>({
             )}
 
             {/* Advance option */}
-            
+
             {/* Table component */}
             <div className="overflow-hidden rounded-md border border-border shadow-sm">
                 <Table className="w-full">

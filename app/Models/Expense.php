@@ -29,7 +29,7 @@ class Expense extends Model
         return $this->hasMany(ExpenseRecord::class);
     }
 
-    public function getTotalRecordsAttribute()
+    public function TotalRecordsAttribute()
     {
         return $this->expenseRecords->count();
     }

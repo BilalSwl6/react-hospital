@@ -84,7 +84,7 @@ const StockDialog = ({ medicine }: StockDialogProps) => {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="link" size="sm">
                     <PlusCircle className="mr-1 h-3 w-3" />
                     Add Stock
                 </Button>

@@ -10,6 +10,10 @@ use App\Models\Ward;
 use App\Services\ExcelExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use App\Http\Resources\Drugdept\Expense\ExpenseResource;
+use App\Http\Resources\Drugdept\Ward\GetWardResource;
+use App\Http\Resources\Drugdept\Expense\ExpenseRecordResource;
 
 class ExpenseController extends Controller
 {
@@ -60,23 +64,14 @@ class ExpenseController extends Controller
             ->paginate(12)
             ->withQueryString(); // Append query parameters to pagination links
 
-        return view('drugDept.expense.index', compact(
-            'records',
-            'selectedWards',
-            'selectedMedicines',
-            'wards'
-        ));
+        return Inertia::render('Drugdept/expense/index', [
+            'data' => ExpenseResource::collection($records),
+            'wards' => GetWardResource::collection($wards),
+            'selectedWards' => $selectedWards,
+            'selectedMedicines' => $selectedMedicines,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $wards = Ward::orderBy('ward_name', 'asc')->where('ward_status', 1)->get();
-
-        return view('drugDept.expense.create', compact('wards'));
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -122,20 +117,15 @@ class ExpenseController extends Controller
     public function show(string $id)
     {
         $expense = Expense::findOrFail($id);
-        $expenseRecords = ExpenseRecord::where('expense_id', $id)->get();
+        $expenseRecords = ExpenseRecord::where('expense_id', $expense->id)
+            ->with('medicine')
+            ->orderBy('date', 'desc')
+            ->get();
 
-        return view('drugDept.expense.showRecord', compact('expense', 'expenseRecords'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $expense = Expense::findOrFail($id);
-        $wards = Ward::orderBy('ward_name', 'asc')->where('ward_status', 1)->get();
-
-        return view('drugDept.expense.edit', compact('expense', 'wards'));
+        return response()->json([
+            'status' => 'success',
+            'expenseRecords' => ExpenseRecordResource::collection($expenseRecords),
+        ]);
     }
 
     /**
@@ -176,6 +166,14 @@ class ExpenseController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
+    }
+
+    public function ExportExcelView()
+    {
+        $wards = Ward::orderBy('ward_name', 'asc')->where('ward_status', 1)->get();
+        return view('Drugdept.expense.export', [
+            'wards' => $wards,
+        ]);
     }
 
     /**
@@ -255,6 +253,6 @@ class ExpenseController extends Controller
         $filePath = $this->excelExportService->export($exportData, $headers, 'expense_records');
 
         // Return the file path
-        return response()->download($filePath, 'expense_records.xlsx')->deleteFileAfterSend(true);
+        return response()->download($filePath, 'expense_records_' . date('Y-m-d') . '.xlsx')->deleteFileAfterSend(true);
     }
 }

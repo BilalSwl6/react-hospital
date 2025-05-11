@@ -28,6 +28,11 @@ const mainNavItems: NavItem[] = [
         href: '/generics',
         icon: FlaskRoundIcon,
     },
+    {
+        title: 'Expense',
+        href: '/expense',
+        icon: HouseIcon,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

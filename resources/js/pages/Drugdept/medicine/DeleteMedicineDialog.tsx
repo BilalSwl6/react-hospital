@@ -35,7 +35,7 @@ const DeleteDialog = ({ medicine}: DeleteDialogProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="destructive" size="sm">
+                <Button variant="link" size="sm">
                     <Trash2 className="mr-1 h-3 w-3" />
                     Delete
                 </Button>

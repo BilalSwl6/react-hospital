@@ -18,6 +18,17 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ViewLogDialog from './ViewLogDialog';
+import ViewMedicineDialog from './ViewMedicineDialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Total Items / Medicine', href: '/medicines' },
@@ -57,9 +68,6 @@ interface PageProps {
 
 const MedicineIndex = ({ data, generics }: PageProps) => {
 
-    console.log('generics:', generics);
-    console.log('data:', data);
-
     const columns = useMemo<ColumnDef<Medicine>[]>(() => [
         {
             accessorKey: 'name',
@@ -80,6 +88,14 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
                         </TooltipProvider>
                     )}
                 </div>
+            ),
+        },
+        {
+            id: 'generic_name',
+            accessorKey: 'generic_name',
+            header: ({ column }) => <ColumnHeader column={column} title="Generic Name" />,
+            cell: ({ row }) => (
+                <div className="text-sm text-muted-foreground">{row.original.generic_name}</div>
             ),
         },
         {
@@ -109,14 +125,6 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
             },
         },
         {
-            id: 'generic_id',
-            accessorKey: 'generic_name',
-            header: ({ column }) => <ColumnHeader column={column} title="Generic Name" />,
-            cell: ({ row }) => (
-                <div className="text-sm text-muted-foreground">{row.original.generic_name}</div>
-            ),
-        },
-        {
             id: 'quantity',
             accessorKey: 'quantity',
             header: ({ column }) => <ColumnHeader column={column} title="Quantity" />,
@@ -137,20 +145,55 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
             }
         },
         {
-            accessorKey: 'status',
-            header: ({ column }) => <ColumnHeader column={column} title="Status" />,
-            cell: ({ row }) => <MedicineStatusBadge status={row.original.status} />,
-        },
+  accessorKey: 'status',
+  header: ({ column }) => <ColumnHeader column={column} title="Status" />,
+  cell: ({ row }) => {
+    const { status, expiry_date: rawExpiry, quantity } = row.original;
+
+    // Handle different timestamp formats
+    let expiryMs: number;
+
+    if (rawExpiry) {
+      // Handle string timestamps
+      if (typeof rawExpiry === 'string') {
+        expiryMs = new Date(rawExpiry).getTime();
+      }
+      // Handle numeric timestamps (seconds or milliseconds)
+      else if (typeof rawExpiry === 'number') {
+        expiryMs = rawExpiry < 1e12 ? rawExpiry * 1000 : rawExpiry;
+      }
+      // Default fallback
+      else {
+        expiryMs = 0;
+      }
+    } else {
+      // If expiry date is null/undefined/falsy
+      expiryMs = 0;
+    }
+
+    const nowMs = Date.now();
+    const isExpired = expiryMs > 0 && expiryMs <= nowMs;
+    const isLowStock = typeof quantity === 'number' && quantity <= 15;
+
+    return (
+      <MedicineStatusBadge
+        status={status}
+        isExpired={isExpired}
+        isLowStock={isLowStock}
+      />
+    );
+  },
+},
         {
             id: 'actions',
             header: ({ column }) => <ColumnHeader column={column} title="Actions" />,
             cell: ({ row }) => (
                 <div className="flex gap-3">
-                    <EditMedicineDialog medicine={row.original} generic={generics} />
                     <StockDialog medicine={row.original} />
-                    { /*
+                    <ViewLogDialog medicineId={row.original.id} medicineName={row.original.name} />
+                    <EditMedicineDialog medicine={row.original} generic={generics} />
                     <DeleteDialog medicine={row.original} />
-                    */ }
+                    <ViewMedicineDialog medicine={row.original} />
                 </div>
             ),
         },
