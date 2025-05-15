@@ -4,6 +4,7 @@ namespace App\Http\Controllers\drugDeptController;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseRecord;
+use App\Models\Expense;
 use App\Models\Medicine;
 
 class DrugDeptController extends Controller
@@ -17,7 +18,7 @@ class DrugDeptController extends Controller
 {
     $AvailableMedicines = Medicine::where('quantity', '>', 0)->count();
 
-    $TodayExpenseRecord = ExpenseRecord::whereDate('date', now())->get();
+    $TodayExpenseRecord = Expense::whereDate('date', now())->get();
 
     $MostUsedMedicines = Medicine::withCount('expenseRecords')
         ->where('generic_id', '!=', 8) // exclude generic_id = 7
