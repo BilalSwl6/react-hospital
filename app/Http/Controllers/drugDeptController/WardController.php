@@ -64,7 +64,7 @@ class WardController extends Controller
             'ward_status' => $request->status == true ? 1 : 0,
         ]);
 
-        return redirect('/wards')->with('success', 'Ward updated successfully.');
+        return redirect()->back()->with('success', 'Ward updated successfully.');
     }
 
     /**
@@ -77,7 +77,7 @@ class WardController extends Controller
         }
 
         $ward->delete();
-        return redirect('/wards')->with('info', 'Ward deleted successfully.');
+        return redirect()->back()->with('info', 'Ward deleted successfully.');
     }
 
     public function search(Request $request)

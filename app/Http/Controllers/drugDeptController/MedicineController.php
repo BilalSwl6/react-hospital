@@ -103,7 +103,7 @@ class MedicineController extends Controller
                 'image' => $path.$filename,
             ]);
 
-            return redirect('/medicines')->with('success', 'Medicine created successfully.');
+            return redirect()->back()->with('success', 'Medicine created successfully.');
         } catch (\Illuminate\Database\QueryException $e) {
             // Get SQL error message
             $errorMessage = $e->getMessage();
@@ -178,7 +178,7 @@ class MedicineController extends Controller
                 'image' => $path.$filename,
             ]);
 
-            return redirect('/medicines')->with('success', 'Medicine updated successfully.');
+            return redirect()->back()->with('success', 'Medicine updated successfully.');
         } catch (\Illuminate\Database\QueryException $e) {
             // Get SQL error message
             $errorMessage = $e->getMessage();

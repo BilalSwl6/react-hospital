@@ -147,7 +147,7 @@ class ExpenseController extends Controller
                 'note' => $request->note,
             ]);
 
-            return redirect()->route('expense.index')->with('success', 'Expense updated successfully');
+            return redirect()->back()->with('success', 'Expense updated successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
@@ -162,7 +162,7 @@ class ExpenseController extends Controller
             $expense = Expense::findOrFail($id);
             $expense->delete();
 
-            return redirect()->route('expense.index')->with('info', 'Expense deleted successfully');
+            return redirect()->back()->with('info', 'Expense deleted successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: '.$e->getMessage());
         }
