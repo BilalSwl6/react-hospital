@@ -46,12 +46,10 @@ class MedicineController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-    public function create()
+     */
+    public function export()
     {
-        $generics = Generic::all()->where('generic_status', 1);
-
-        return view('drugDept.medicine.create', compact('generics'));
+        return view('Drugdept.medicine.export');
     }
 
     /**
@@ -195,6 +193,10 @@ class MedicineController extends Controller
      */
     public function destroy(Medicine $medicine)
     {
+        if ($medicine->expenseRecords()->exists()) {
+            return redirect()->back()->with('error', 'Medicine cannot be deleted because it has associated expense records.');
+        }
+
         // Optionally, delete the image file from storage
         if (File::exists(public_path($medicine->image))) {
             File::delete(public_path($medicine->image));
@@ -220,7 +222,7 @@ class MedicineController extends Controller
 
         $medicines = $query->orderBy('name')->paginate(25);
 
-        return view('drugDept.medicine.total', [
+        return view('Drugdept.medicine.total', [
             'medicines' => $medicines,
         ]);
     }

@@ -72,8 +72,11 @@ class WardController extends Controller
      */
     public function destroy(Ward $ward)
     {
-        $ward->delete();
+        if ($ward->expenses()->exists()) {
+            return redirect()->back()->with('error', 'Ward cannot be deleted because it has associated expenses.');
+        }
 
+        $ward->delete();
         return redirect('/wards')->with('info', 'Ward deleted successfully.');
     }
 

@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/app-layout';
 import { ColumnHeader } from '@/components/table/column-header';
@@ -9,7 +9,7 @@ import CreateExpenseDialog from './CreateExpenseDialog';
 import EditExpenseDialog from './EditExpenseDialog';
 import ViewExpenseRecords from './ViewExpenseRecords';
 import { PaginationProps } from '@/components/table/pagination';
-import { CircleHelp } from 'lucide-react';
+import { CircleHelp, EllipsisVertical } from 'lucide-react';
 import { SelectInput } from '@/components/SelectInput';
 import {
     Tooltip,
@@ -20,6 +20,13 @@ import {
 import { Label } from '@/components/ui/label';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 // Define interfaces for the data structures
 export interface Expense {
@@ -185,13 +192,13 @@ const ExpenseIndex = ({ data, wards, filters = {} }: PageProps) => {
             header: ({ column }) => <ColumnHeader column={column} title="Date" />,
             cell: ({ row }) => {
                 const date = new Date(row.original.date);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based
+                const year = date.getFullYear();
+
                 return (
                     <div className="text-sm text-muted-foreground">
-                        {date.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                        })}
+                        {`${day}-${month}-${year}`}
                     </div>
                 );
             }
@@ -231,16 +238,37 @@ const ExpenseIndex = ({ data, wards, filters = {} }: PageProps) => {
             id: 'actions',
             header: ({ column }) => <ColumnHeader column={column} title="Actions" />,
             cell: ({ row }) => (
-                <div className="flex flex-wrap gap-2">
-                { /*
-                    <EditExpenseDialog wards={wards.data} expense={row.original} />
-                    <ViewExpenseRecords expenseId={row.original.id} />
+                <div className="flex items-center space-x-3">
+
+                    { /*
                     */ }
-                    <a href={route('expenseRecord.create', { expense_id: row.original.id })}>
+                    <Link href={route('expenseRecord.create', { expense_id: row.original.id })}>
                         <Button variant="secondary" size="sm">
                             Create Record
                         </Button>
-                        </a>
+                    </Link>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <EllipsisVertical className="w-4 h-4 text-muted-foreground" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                onSelect={(e) => {
+                                    e.preventDefault();
+                                }}
+                            >
+                                <EditExpenseDialog wards={wards.data} expense={row.original} />
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={(e) => {
+                                    e.preventDefault();
+                                }}
+                            >
+                                <ViewExpenseRecords expenseId={row.original.id} />
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                 </div>
             ),
         },

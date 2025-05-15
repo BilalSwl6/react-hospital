@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Head } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
+import { Head, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/app-layout';
 import { ColumnHeader } from '@/components/table/column-header';
@@ -11,7 +11,7 @@ import DeleteDialog from './DeleteMedicineDialog';
 import MedicineStatusBadge from './MedicineStatusBadge';
 import StockDialog from './StockDialog';
 import { PaginationProps } from '@/components/table/pagination';
-import { CircleHelp } from 'lucide-react';
+import { CircleHelp, EllipsisVertical } from 'lucide-react';
 import {
     Tooltip,
     TooltipContent,
@@ -20,14 +20,16 @@ import {
 } from "@/components/ui/tooltip";
 import ViewLogDialog from './ViewLogDialog';
 import ViewMedicineDialog from './ViewMedicineDialog';
+import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,18 +57,24 @@ export interface Medicine {
     image: string;
 }
 
-interface PageProps {
+export interface Generic {
     data: {
-        data: Medicine[];
-        meta: PaginationProps;
-    };
-    generics: {
         id: string;
         name: string;
     }[];
 }
 
+interface PageProps {
+    data: {
+        data: Medicine[];
+        meta: PaginationProps;
+    };
+    generics: Generic;
+}
+
 const MedicineIndex = ({ data, generics }: PageProps) => {
+
+    const [Open, setOpen] = useState(false);
 
     const columns = useMemo<ColumnDef<Medicine>[]>(() => [
         {
@@ -100,6 +108,7 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
         },
         {
             accessorKey: 'description',
+            enableSorting: false,
             header: ({ column }) => <ColumnHeader column={column} title="Description" />,
             cell: ({ row }) => {
                 const description = row.original.description || 'No description available';
@@ -127,6 +136,7 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
         {
             id: 'quantity',
             accessorKey: 'quantity',
+            enableSorting: false,
             header: ({ column }) => <ColumnHeader column={column} title="Quantity" />,
             cell: ({ row }) => {
                 const quantity = row.original.quantity || 0;
@@ -145,55 +155,106 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
             }
         },
         {
-  accessorKey: 'status',
-  header: ({ column }) => <ColumnHeader column={column} title="Status" />,
-  cell: ({ row }) => {
-    const { status, expiry_date: rawExpiry, quantity } = row.original;
+            accessorKey: 'status',
+            header: ({ column }) => <ColumnHeader column={column} title="Status" />,
+            cell: ({ row }) => {
+                const { status, expiry_date: rawExpiry, quantity } = row.original;
 
-    // Handle different timestamp formats
-    let expiryMs: number;
+                // Handle different timestamp formats
+                let expiryMs: number;
 
-    if (rawExpiry) {
-      // Handle string timestamps
-      if (typeof rawExpiry === 'string') {
-        expiryMs = new Date(rawExpiry).getTime();
-      }
-      // Handle numeric timestamps (seconds or milliseconds)
-      else if (typeof rawExpiry === 'number') {
-        expiryMs = rawExpiry < 1e12 ? rawExpiry * 1000 : rawExpiry;
-      }
-      // Default fallback
-      else {
-        expiryMs = 0;
-      }
-    } else {
-      // If expiry date is null/undefined/falsy
-      expiryMs = 0;
-    }
+                if (rawExpiry) {
+                    // Handle string timestamps
+                    if (typeof rawExpiry === 'string') {
+                        expiryMs = new Date(rawExpiry).getTime();
+                    }
+                    // Handle numeric timestamps (seconds or milliseconds)
+                    else if (typeof rawExpiry === 'number') {
+                        expiryMs = rawExpiry < 1e12 ? rawExpiry * 1000 : rawExpiry;
+                    }
+                    // Default fallback
+                    else {
+                        expiryMs = 0;
+                    }
+                } else {
+                    // If expiry date is null/undefined/falsy
+                    expiryMs = 0;
+                }
 
-    const nowMs = Date.now();
-    const isExpired = expiryMs > 0 && expiryMs <= nowMs;
-    const isLowStock = typeof quantity === 'number' && quantity <= 15;
+                const nowMs = Date.now();
+                const isExpired = expiryMs > 0 && expiryMs <= nowMs;
+                const isLowStock = typeof quantity === 'number' && quantity <= 15;
 
-    return (
-      <MedicineStatusBadge
-        status={status}
-        isExpired={isExpired}
-        isLowStock={isLowStock}
-      />
-    );
-  },
-},
+                return (
+                    <MedicineStatusBadge
+                        status={status}
+                        isExpired={isExpired}
+                        isLowStock={isLowStock}
+                    />
+                );
+            },
+        },
         {
             id: 'actions',
             header: ({ column }) => <ColumnHeader column={column} title="Actions" />,
             cell: ({ row }) => (
-                <div className="flex gap-3">
-                    <StockDialog medicine={row.original} />
-                    <ViewLogDialog medicineId={row.original.id} medicineName={row.original.name} />
-                    <EditMedicineDialog medicine={row.original} generic={generics} />
-                    <DeleteDialog medicine={row.original} />
-                    <ViewMedicineDialog medicine={row.original} />
+                <div className="flex items-center space-x-3">
+                    {/* Stock dialog with right margin  */}
+                    <StockDialog medicine={row.original} className="p-1" />
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div className="p-2 cursor-pointer rounded hover:bg-gray-100">
+                                <EllipsisVertical className="w-4 h-4" />
+                            </div>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" className="p-2 space-y-1">
+                            <DropdownMenuItem
+                                className="px-3 py-2 rounded hover:bg-gray-100"
+                                onSelect={(e) => e.preventDefault()}
+                            >
+                                <EditMedicineDialog
+                                    medicine={row.original}
+                                    generic={generics}
+                                    onOpenChange={setOpen}
+                                />
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                className="px-3 py-2 rounded hover:bg-gray-100"
+                                onSelect={(e) => {
+                                    e.preventDefault();
+                                    setOpen(true);
+                                }}
+                            >
+                                <ViewLogDialog
+                                    medicineId={row.original.id}
+                                    medicineName={row.original.name}
+                                />
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                className="px-3 py-2 rounded hover:bg-gray-100"
+                                onSelect={(e) => {
+                                    e.preventDefault();
+                                    setOpen(true);
+                                }}
+                            >
+                                <DeleteDialog medicine={row.original} />
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                className="px-3 py-2 rounded hover:bg-gray-100"
+                                onSelect={(e) => {
+                                    e.preventDefault();
+                                    setOpen(true);
+                                }}
+                            >
+                                <ViewMedicineDialog medicine={row.original} />
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             ),
         },
@@ -205,8 +266,38 @@ const MedicineIndex = ({ data, generics }: PageProps) => {
             <div className="container mx-auto py-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold">Medicines Management</h1>
-                    <CreateMedicineDialog generic={generics} />
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                        <CreateMedicineDialog generic={generics} />
+                        <div className="w-full sm:w-auto">
+                            <a href={route('medicines.export')} target="_blank">
+                                <Button variant="secondary" className="w-full sm:w-auto">
+                                    Export Data
+                                </Button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                <form
+                    className="w-full sm:w-auto mb-4"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        const value = (e.target as HTMLFormElement).elements.namedItem('search') as HTMLInputElement;
+                        router.get(route('medicines.index'), {
+                            search: value.value,
+                        });
+                    }}
+                >
+                    <Label htmlFor="search" className="sr-only">
+                        Search
+                    </Label>
+                    <Input
+                        type="text"
+                        id="search"
+                        name="search"
+                        placeholder="Search..."
+                        className="w-full sm:w-auto"
+                    />
+                </form>
 
                 <div className="rounded-lg border shadow-sm">
                     <div className="overflow-x-auto">

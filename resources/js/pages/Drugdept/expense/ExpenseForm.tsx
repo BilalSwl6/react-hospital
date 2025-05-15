@@ -58,7 +58,7 @@ const ExpenseForm = ({
     return (
         <form onSubmit={handleSubmit}>
             <div className="mb-4">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date">Date (MM-DD-YYYY)</Label>
                 <Input
                     id="date"
                     type="date"
@@ -68,6 +68,7 @@ const ExpenseForm = ({
                     // add today date by default
                     required
                 />
+                <p className="text-sm">make sure to select the date in MM-DD-YYYY format</p>
                 <InputError message={errors.date} className="mt-2" />
             </div>
 

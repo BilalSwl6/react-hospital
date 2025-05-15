@@ -38,6 +38,11 @@ class Medicine extends Model
         return $this->belongsTo(Generic::class);
     }
 
+    public function expenseRecords()
+    {
+        return $this->hasMany(ExpenseRecord::class);
+    }
+
     public function getTotalUsedAttribute()
     {
         $total = 0;

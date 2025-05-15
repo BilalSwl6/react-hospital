@@ -94,8 +94,11 @@ class GenericController extends Controller
      */
     public function destroy(Generic $generic)
     {
-        $generic->delete();
+        if ($generic->medicines()->exists()) {
+            return redirect()->back()->with('error', 'Generic cannot be deleted because it has associated medicines.');
+        }
 
+        $generic->delete();
         return redirect()->back()->with('info', 'Generic deleted successfully.');
     }
 }

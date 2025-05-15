@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/app-layout';
 import { ColumnHeader } from '@/components/table/column-header';
@@ -17,6 +17,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Generic', href: '/generics' },
@@ -65,6 +67,7 @@ const GenericIndex = ({ data }: PageProps) => {
         },
         {
             accessorKey: 'description',
+            enableSorting: false,
             header: ({ column }) => <ColumnHeader column={column} title="Description" />,
             cell: ({ row }) => {
                 const description = row.original.description || 'No description available';
@@ -123,6 +126,27 @@ const GenericIndex = ({ data }: PageProps) => {
                     <h1 className="text-2xl font-bold">Generics Management</h1>
                     <CreateGenericDialog />
                 </div>
+                <form
+                    className="w-full sm:w-auto mb-4"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        const value = (e.target as HTMLFormElement).elements.namedItem('search') as HTMLInputElement;
+                        router.get(route('generics.index'), {
+                            search: value.value,
+                        });
+                    }}
+                >
+                    <Label htmlFor="search" className="sr-only">
+                        Search
+                    </Label>
+                    <Input
+                        type="text"
+                        id="search"
+                        name="search"
+                        placeholder="Search..."
+                        className="w-full sm:w-auto"
+                    />
+                </form>
 
                 <div className="rounded-lg border shadow-sm">
                     <div className="overflow-x-auto">

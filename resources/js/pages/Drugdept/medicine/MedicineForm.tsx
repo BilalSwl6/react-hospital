@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -63,7 +63,6 @@ const MedicineForm = ({
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Form submitted:', typeof(data.generic_id));
 
         if (isEditing) {
             put(route('medicines.update', medicine.id), {
@@ -90,13 +89,6 @@ const MedicineForm = ({
 
     // RSelect expects value to be the full option object
     const selectedRoute = routeOptions.find((option) => option.value === data.route);
-
-    // For debugging
-    useEffect(() => {
-        console.log('Original expiry date from server:', medicine.expiry_date);
-        console.log('Formatted expiry date for input:', data.expiry_date);
-    }, []);
-
     return (
         <form onSubmit={handleSubmit}>
             <div className="mb-4">

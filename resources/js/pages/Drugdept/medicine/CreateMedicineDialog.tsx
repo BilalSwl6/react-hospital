@@ -8,15 +8,15 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import MedicineForm from './MedicineForm';
 import { Plus } from 'lucide-react';
+import MedicineForm from './MedicineForm';
+import { Medicine, Generic } from './index';
+
 
 interface PageProps {
-    generic: {
-        id: string;
-        name: string;
-    }[];
+    generic: Generic;
 }
+
 
 const CreateMedicineDialog = ({ generic }: PageProps) => {
     const [open, setOpen] = React.useState(false);
