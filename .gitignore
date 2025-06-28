@@ -8,7 +8,10 @@
 /storage/pail
 /vendor
 bootstrap/cache/*.php
-bootstrap/app.php
+# Ignore the application bootstrap file
+# bootstrap/app.php
+
+# Ignore environment configuration file
 .env
 .env.backup
 .env.production
