@@ -151,7 +151,7 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'r2',
+                'gcs',
             ],
         ],
 

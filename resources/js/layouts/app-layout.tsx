@@ -16,11 +16,8 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
         {children}
         <MessageBox />
-    </AppLayoutTemplate>
-
-
-    <footer className="w-full border-t py-6">
-      <div className="container mx-auto flex flex-col space-y-2 px-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <footer className="w-full border-t py-6">
+      <div className="container mx-auto flex flex-col space-y-2 px-4 md:flex-row md:items-center md:justify-between md:space-y-0 p-4">
         <p className="text-sm text-muted-foreground">
           &copy; {currentYear} Sahiwal Teaching Hospital. All rights reserved.
         </p>
@@ -29,6 +26,10 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
         </p>
       </div>
     </footer>
+    </AppLayoutTemplate>
+
+
+
 
     </>
 );

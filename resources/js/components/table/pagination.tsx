@@ -61,7 +61,7 @@ function Pagination<TData>({ pagination }: PageProps<TData>) {
     if (currentPageIndex === -1) return pageLinks.slice(0, 5); // Fallback if active page not found
 
     // Build visible links array
-    let result = [];
+    const result = [];
 
     // If current page is not near the beginning, add ellipsis
     if (currentPageIndex > 1) {

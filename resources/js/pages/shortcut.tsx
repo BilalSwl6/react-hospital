@@ -1,6 +1,5 @@
-import { Command, Info, HelpCircle, PlusCircle } from 'lucide-react';
+import { Info, HelpCircle, PlusCircle } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Head } from '@inertiajs/react';
 
 const ShortcutsPage = () => {

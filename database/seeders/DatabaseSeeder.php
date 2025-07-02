@@ -6,6 +6,7 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Expense;
+use App\Models\DbBackupRecord;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,9 +20,11 @@ class DatabaseSeeder extends Seeder
 
             User::factory()->create([
                 'name' => 'Test User',
-                'email' => 'admin@mail.com',
+                'email' => 'mbilal2913@gmail.com',
                 'password' => bcrypt('12345678'),
             ]);
+
+            DbBackupRecord::factory(5)->create();
 
             $this->call([
                 WardSeeder::class,

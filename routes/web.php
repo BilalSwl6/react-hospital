@@ -6,7 +6,6 @@ use App\Http\Controllers\drugDeptController\GenericController;
 use App\Http\Controllers\drugDeptController\MedicineController;
 use App\Http\Controllers\drugDeptController\WardController;
 use App\Http\Controllers\drugDeptController\DrugDeptController;
-use App\Http\Controllers\Controller\DbBackupController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/api/dashboard', [DrugDeptController::class, 'dashboard'])->name('dashboard.api');
 
-    Route::get('/db-backup', [DbBackupController::class, 'index'])->name('db_backup.index');
+    
 
     Route::get('/wards/search', [WardController::class, 'search'])->name('wards.search');
     Route::resource('wards', WardController::class);

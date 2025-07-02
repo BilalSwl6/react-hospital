@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
-import { Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Label } from '@/components/ui/label';
 import InputError from '@/components/input-error';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -301,6 +301,8 @@ function AddMedicine({ message, expense, expense_id, medicines }: PageProps) {
 
     return (
         <AppLayout>
+            {/* ward name and date in title */}
+            <Head title={`${expense.ward_name} - ${format(new Date(expense.date), 'dd-MM-yyyy')}`} />
             <div className="p-4 md:p-6 mx-auto">
                 <h1 className="mb-4 md:mb-8 text-2xl md:text-4xl font-bold text-center">
                     Create New Record{" "}
