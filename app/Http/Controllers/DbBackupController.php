@@ -34,6 +34,7 @@ class DbBackupController extends Controller
             // Check if backup already exists for today
             $existing = DbBackupRecord::whereDate('date', today())->first();
             if ($existing) {
+                Log::info('Backup already exists for today.');
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Backup already exists for today.',
@@ -60,6 +61,10 @@ class DbBackupController extends Controller
             ]);
         } catch (\Exception $e) {
             ([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            Log::error('Failed to dispatch backup job', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
