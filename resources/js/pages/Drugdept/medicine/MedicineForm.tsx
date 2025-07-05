@@ -90,6 +90,10 @@ const MedicineForm = ({
     // RSelect expects value to be the full option object
     const selectedRoute = routeOptions.find((option) => option.value === data.route);
     return (
+        <>
+        <div className='text-red-400 text-center mb-4'>
+            Use notpad to to write details and than copy-paste here
+        </div>
         <form onSubmit={handleSubmit}>
             <div className="mb-4">
                 <Label htmlFor="name">Name</Label>
@@ -105,7 +109,7 @@ const MedicineForm = ({
 
             <div className="mb-4">
                 <Label htmlFor="description">Description</Label>
-                <Input
+                <Textarea
                     id="description"
                     value={data.description}
                     onChange={(e) => setData('description', e.target.value)}
@@ -292,6 +296,7 @@ const MedicineForm = ({
                 </Button>
             </div>
         </form>
+</>
     );
 };
 

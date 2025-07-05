@@ -19,7 +19,7 @@ class RunDatabaseBackup implements ShouldQueue
 
     public int $recordId;
     public int $tries = 3;
-    public int $timeout = 3600; // 1 hour timeout
+    public int $timeout = 3600; 
 
     /**
      * Create a new job instance.
@@ -35,8 +35,6 @@ class RunDatabaseBackup implements ShouldQueue
     public function handle(): void
     {
         $record = DbBackupRecord::findOrFail($this->recordId);
-
-        Log::info('Starting database backup', ['record_id' => $this->recordId]);
 
         $record->update([
             'status' => DbBackupRecord::STATUS_RUNNING,
@@ -63,17 +61,7 @@ class RunDatabaseBackup implements ShouldQueue
                 'file_size' => $this->getFileSize($latestFile),
             ]);
 
-            Log::info('Database backup completed successfully', [
-                'record_id' => $this->recordId,
-                'file_name' => $latestFile,
-            ]);
-
         } catch (Throwable $e) {
-            Log::error('Database backup failed', [
-                'record_id' => $this->recordId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
 
             $record->update([
                 'status' => DbBackupRecord::STATUS_FAILED,
@@ -90,11 +78,6 @@ class RunDatabaseBackup implements ShouldQueue
      */
     public function failed(Throwable $exception): void
     {
-        Log::critical('Database backup job failed permanently', [
-            'record_id' => $this->recordId,
-            'error' => $exception->getMessage(),
-        ]);
-
         $record = DbBackupRecord::find($this->recordId);
         if ($record) {
             $record->update([

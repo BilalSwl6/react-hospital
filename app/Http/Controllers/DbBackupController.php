@@ -31,25 +31,25 @@ class DbBackupController extends Controller
     public function backup()
     {
         try {
-            $today = now()->toDateString();
-
             // Check if backup already exists for today
-            if (DbBackupRecord::where('date', $today)->exists()) {
-                return back()->with('error','Database backup already exists for today.');
+            $existing = DbBackupRecord::whereDate('date', today())->first();
+            if ($existing) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Backup already exists for today.',
+                ], 400);
             }
 
             // Create backup record
             $record = DbBackupRecord::create([
-                'date' => $today,
+                'date' => today(),
                 'status' => DbBackupRecord::STATUS_PENDING,
             ]);
 
             // Dispatch the backup job
             RunDatabaseBackup::dispatch($record->id);
 
-            Log::info('Database backup job dispatched', ['record_id' => $record->id]);
-
-            return back()->with('response', [
+            return response()->json([
                 'status' => 'success',
                 'message' => 'Backup job has been dispatched successfully.',
                 'data' => [
@@ -58,17 +58,16 @@ class DbBackupController extends Controller
                     'status' => $record->status,
                 ],
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Failed to dispatch backup job', [
+            ([
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return back()->with('response', [
+            return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to dispatch backup job.',
-            ]);
+                'message' => 'Failed to dispatch backup job',
+            ], 500);
         }
     }
 
