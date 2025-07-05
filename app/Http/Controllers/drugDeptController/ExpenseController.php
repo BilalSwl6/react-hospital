@@ -119,7 +119,6 @@ class ExpenseController extends Controller
         $expense = Expense::findOrFail($id);
         $expenseRecords = ExpenseRecord::where('expense_id', $expense->id)
             ->with('medicine')
-            ->orderBy('date', 'desc')
             ->get();
 
         return response()->json([
