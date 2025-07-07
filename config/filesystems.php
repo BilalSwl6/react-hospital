@@ -68,6 +68,7 @@ return [
         'gcs' => [
             'driver' => 'gcs',
             'key_file_path' => env('GOOGLE_CLOUD_KEY_FILE'),
+            'key_file' => json_decode(base64_decode(env('GOOGLE_CLOUD_KEY_JSON')), true),
             'project_id' => env('GOOGLE_CLOUD_PROJECT_ID'),
             'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET'),
             'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', ''),
