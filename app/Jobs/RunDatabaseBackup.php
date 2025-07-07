@@ -19,7 +19,7 @@ class RunDatabaseBackup implements ShouldQueue
 
     public int $recordId;
     public int $tries = 3;
-    public int $timeout = 3600; 
+    public int $timeout = 3600;
 
     /**
      * Create a new job instance.
@@ -42,7 +42,11 @@ class RunDatabaseBackup implements ShouldQueue
         ]);
 
         try {
-            // Run spatie backup: only DB, disable notifications
+            // 1. Clean all old local backup files
+            Storage::disk('local')->deleteDirectory('Laravel');
+            Storage::disk('local')->makeDirectory('Laravel');
+
+            // 2. Run the backup (local only)
             $exitCode = Artisan::call('backup:run', [
                 '--only-db' => true,
                 '--disable-notifications' => true,
@@ -52,24 +56,32 @@ class RunDatabaseBackup implements ShouldQueue
                 throw new \Exception('Backup command failed with exit code: ' . $exitCode);
             }
 
-            $latestFile = $this->getLatestBackupFile();
+            // 3. Get the latest local backup file
+            $localPath = $this->getLatestLocalBackupFile();
+            $fileContents = Storage::disk('local')->get($localPath);
+            $fileSize = Storage::disk('local')->size($localPath);
 
+            // 4. Upload to GCS
+            Storage::disk('gcs')->put($localPath, $fileContents);
+
+            // 5. Delete the local file
+            Storage::disk('local')->delete($localPath);
+
+            // 6. Update DB record
             $record->update([
                 'status' => DbBackupRecord::STATUS_COMPLETED,
-                'file_name' => $latestFile,
+                'file_name' => $localPath,
                 'completed_at' => now(),
-                'file_size' => $this->getFileSize($latestFile),
+                'file_size' => $fileSize,
             ]);
-
         } catch (Throwable $e) {
-
             $record->update([
                 'status' => DbBackupRecord::STATUS_FAILED,
                 'error_message' => $e->getMessage(),
                 'completed_at' => now(),
             ]);
 
-            throw $e; // rethrow for retry
+            throw $e;
         }
     }
 
@@ -89,32 +101,16 @@ class RunDatabaseBackup implements ShouldQueue
     }
 
     /**
-     * Get the size of the backup file in bytes from GCS.
+     * Get the latest backup file from local storage.
      */
-    private function getFileSize(string $filePath): ?int
+    private function getLatestLocalBackupFile(): string
     {
-        try {
-            return Storage::disk('gcs')->size($filePath);
-        } catch (\Exception $e) {
-            Log::warning('Could not determine backup file size', [
-                'file' => $filePath,
-                'error' => $e->getMessage(),
-            ]);
-            return null;
-        }
-    }
-
-    /**
-     * Get the latest backup file path on GCS.
-     */
-    private function getLatestBackupFile(): string
-    {
-        $files = collect(Storage::disk('gcs')->files('Laravel'));
+        $files = collect(Storage::disk('local')->files('Laravel'));
 
         return $files
             ->filter(fn($file) => str_ends_with($file, '.zip'))
             ->sortDesc()
             ->first()
-            ?? throw new \Exception('No backup file found in GCS');
+            ?? throw new \Exception('No local backup file found');
     }
 }
