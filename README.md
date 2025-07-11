@@ -79,7 +79,7 @@ npm run dev
 
 ## 🛠 Optimization Plans
 
-* [✅] User Authentication
+* [x] User Authentication
 * [ ] Role & Permission Management
 * [ ] API Support for Mobile & Third-party Integration
 * [ ] Dockerization
