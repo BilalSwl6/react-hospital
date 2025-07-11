@@ -66,4 +66,10 @@ pre code {
 img {
   max-width: 100%;
   height: auto;
+  display: block;
+  margin: 1rem 0;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  max-height: 400px;
+  object-fit: contain;
 }
