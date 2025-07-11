@@ -24,10 +24,11 @@
     margin-bottom: 10px;
   }
 </style>
+ <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Clinic Inventory Management System</h1>
-  <p>This is a comprehensive inventory management system designed for clinics to efficiently track and manage their medical supplies, including medicines and other essential items. The system is built using the TALL (TailwindCSS, Alpine.js, Laravel, Livewire) stack, providing a modern and reactive user interface.</p>
+  <h1>Hospital Inventory Management System</h1>
+  <p>This is a comprehensive inventory management system designed for hospital to efficiently track and manage their medical supplies, including medicines and other essential items. The system is built using the TALL (TailwindCSS, inertiajs/react, Laravel) stack, providing a modern and reactive user interface.</p>
   <h2>Features</h2>
   <ul>
     <li><strong>Medicine Management:</strong>
@@ -46,13 +47,13 @@
     </li>
     <li><strong>Ward Management:</strong>
       <ul>
-        <li>Define and manage different wards or locations within the clinic.</li>
-        <li>Allocate medicines to specific wards.</li>
+        <li>Define and manage different wards or locations within the hospital/clinics.</li>
+        <li>can add ward size.</li>
       </ul>
     </li>
     <li><strong>Expense Management:</strong>
       <ul>
-        <li>Record various expenses related to clinic operations.</li>
+        <li>Record various expenses related to hospital operations.</li>
         <li>Categorize expenses.</li>
         <li>Track expense records.</li>
       </ul>
@@ -60,13 +61,12 @@
     <li><strong>User Authentication and Authorization:</strong>
       <ul>
         <li>Secure user login and registration.</li>
-        <li>Role-based access control to different parts of the system.</li>
+        <li>Role-based access control to different parts of the system. (Future Feature)</li>
       </ul>
     </li>
     <li><strong>Backup Functionality:</strong>
       <ul>
-        <li>Scheduled and manual database backups.</li>
-        <li>Download backup files.</li>
+        <li>Scheduled and manual database backups. (some errors but will fix soon)</li>
       </ul>
     </li>
     <li><strong>Reporting:</strong> (Future Feature)
@@ -81,8 +81,8 @@
     <li><strong>Frontend:</strong>
       <ul>
         <li>TailwindCSS (CSS Framework)</li>
-        <li>Alpine.js (JavaScript Framework)</li>
-        <li>Livewire (Full-stack framework for Laravel)</li>
+        <li>Inertiajs (JavaScript Framework)</li>
+        <li>Shadcn UI (Component laibray for react)</li>
       </ul>
     </li>
     <li><strong>Database:</strong> MySQL</li>
@@ -90,7 +90,7 @@
   <h2>Installation</h2>
   <h3>Prerequisites</h3>
   <ul>
-    <li>PHP >= 8.1</li>
+    <li>PHP >= 8.3</li>
     <li>Composer</li>
     <li>Node.js & npm</li>
     <li>MySQL Database</li>
