@@ -4,7 +4,7 @@ A modern web-based solution for managing hospital operations efficiently. Built 
 
 ---
 
-[![App Platorm](https://github.com/BilalSwl6/react-hospital/blob/main/docs/screenshot.png)](https://github.com/BilalSwl6/react-hospital/blob/main/docs/screenshot.png)
+[![App Platorm](https://github.com/BilalSwl6/react-hospital/blob/main/docs/banner.png)](https://github.com/BilalSwl6/react-hospital/blob/main/docs/banner.png)
 
 ## 📦 Installation Guide
 
