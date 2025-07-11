@@ -64,8 +64,6 @@ pre code {
 }
 
 img {
-  max-width: auto;
-  min-width: 100px;
-  min-height: auto;
-  max-height: 100px;
+  max-width: 100%;
+  height: auto;
 }
