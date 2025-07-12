@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             ]);
 
             DbBackupRecord::factory(5)->create();
-            Expense::factory(100)->create();
+            Expense::factory(20)->create();
 
 
             $this->call([
