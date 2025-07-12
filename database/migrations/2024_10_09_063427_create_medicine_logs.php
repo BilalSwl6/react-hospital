@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('medicine_id')->references('id')->on('medicines')->onDelete('cascade');
             $table->unsignedInteger('quantity');
             $table->date('date');
-            $table->string('notes')->nullable();
+            $table->string('notes', 2000)->nullable();
             $table->timestamps();
         });
     }

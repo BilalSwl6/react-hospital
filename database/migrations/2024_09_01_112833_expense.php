@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->foreignId('ward_id')->constrained();
-            $table->string('note')->nullable();
+            $table->string('note', 1000)->nullable();
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
             $table->unique(['date', 'ward_id']);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('wards', function (Blueprint $table) {
             $table->id();
             $table->string('ward_name')->unique();
-            $table->string('ward_description')->nullable();
+            $table->string('ward_description', 1000)->nullable();
             $table->integer('ward_capacity')->nullable();
             $table->boolean('ward_status')->default(1)->comment('1=Active, 0=Inactive');
             $table->timestamps();

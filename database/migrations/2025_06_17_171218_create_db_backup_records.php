@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('db_backup_records', function (Blueprint $table) {
             $table->id();
             $table->date('date')->unique()->comment('The date of the backup');
-            $table->string('file_name')->nullable()->comment('The name of the backup file');
+            $table->string('file_name', 500)->nullable()->comment('The name of the backup file');
             $table
                 ->enum('status', ['pending', 'running', 'completed', 'failed'])
                 ->default('pending')

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('description')->nullable();
+            $table->string('description', 1500)->nullable();
             $table->foreignId('generic_id')->constrained('generics')->cascadeOnDelete();
             $table->integer('quantity')->nullable();
             $table->integer('price')->nullable()->default(0);
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('dosage')->nullable();
             $table->string('strength')->nullable();
             $table->string('route')->nullable();
-            $table->string('notes')->nullable();
+            $table->string('notes', 1000)->nullable();
             $table->date('expiry_date')->nullable();
             $table->string('category')->nullable();
             $table->string('manufacturer')->nullable();

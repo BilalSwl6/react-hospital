@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('generics', function (Blueprint $table) {
             $table->id();
             $table->string('generic_name')->unique();
-            $table->string('generic_description')->nullable();
+            $table->string('generic_description', 1000)->nullable();
             $table->boolean('generic_status')->default(1);
-            $table->string('generic_notes')->nullable();
+            $table->string('generic_notes', 1000)->nullable();
             $table->string('generic_category')->nullable();
             $table->string('generic_subcategory')->nullable();
-            $table->string('therapeutic_class')->nullable();
+            $table->string('therapeutic_class', 1000)->nullable();
             $table->timestamps();
         });
     }
