@@ -23,16 +23,17 @@ class DatabaseSeeder extends Seeder
                 'email' => 'admin@mail.com',
                 'password' => bcrypt('12345678'),
             ]);
+            $this->call([
+                WardSeeder::class,
+                GenericSeeder::class,
+                MedicineSeeder::class,
+            ]);
 
             DbBackupRecord::factory(5)->create();
             Expense::factory(100)->create();
 
 
             $this->call([
-                WardSeeder::class,
-                GenericSeeder::class,
-                MedicineSeeder::class,
-                // ExpenseSeeder::class,
                 ExpenseRecordSeeder::class,
             ]);
         }
