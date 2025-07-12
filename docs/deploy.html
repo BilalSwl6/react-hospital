@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment - Hospital Information System Documentation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Hospital Information System Documentation</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Introduction</a></li>
+                <li><a href="changelog.html">Changelog</a></li>
+                <li><a href="upcoming-features.html">Upcoming Features</a></li>
+                <li><a href="author-notes.html">Author Notes</a></li>
+                <li><a href="deploy.html">Deployment</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Deployment</h2>
+            <p>This section outlines the steps required to deploy the Hospital Information System.</p>
+        </section>
+
+        <section>
+            <h3>General Deployment Steps</h3>
+            <p>These are the general steps for deploying the application to a server. Specific commands and configurations may vary depending on your server environment.</p>
+
+            <h4>Prerequisites:</h4>
+            <ul>
+                <li>PHP (version 8.2 or higher)</li>
+                <li>Composer</li>
+                <li>Node.js & npm or yarn</li>
+                <li>Database (MySQL, PostgreSQL, etc.)</li>
+                <li>Web Server (Apache, Nginx, etc.)</li>
+                <li>Git</li>
+            </ul>
+
+            <h4>Deployment Process:</h4>
+            <ol>
+                <li><strong>Clone the repository:</strong>
+                    <pre><code class="language-bash">git clone https://github.com/BilalSwl6/react-hospital.git</code></pre>
+                </li>
+                <li><strong>Install PHP dependencies:</strong>
+                    <pre><code class="language-bash">composer install --no-dev</code></pre>
+                </li>
+                <li><strong>Install JavaScript dependencies:</strong>
+                    <pre><code class="language-bash">npm install</code></pre> or <pre><code class="language-bash">yarn install</code></pre>
+                </li>
+                <li><strong>Build front-end assets:</strong>
+                    <pre><code class="language-bash">npm run build</code></pre> or <pre><code class="language-bash">yarn build</code></pre>
+                </li>
+                <li><strong>Set up environment file:</strong> Copy the <code>.env.example</code> file to <code>.env</code> and configure your database credentials and other environment variables.
+                    <pre><code class="language-bash">cp .env.example .env</code></pre>
+                </li>
+                <li><strong>Generate application key:</strong>
+                    <pre><code class="language-bash">php artisan key:generate</code></pre>
+                </li>
+                <li><strong>Run database migrations:</strong>
+                    <pre><code class="language-bash">php artisan migrate --force</code></pre>
+                </li>
+                 <li><strong>Run database seeders (optional):</strong>
+                    <pre><code class="language-bash">php artisan db:seed --force</code></pre>
+                </li>
+                <li><strong>Configure your web server:</strong> Point your web server's document root to the <code>public</code> directory of your application. Ensure that the necessary rewrite rules are configured for clean URLs.</li>
+                <li><strong>Set correct file permissions:</strong> Ensure that the <code>storage</code> and <code>bootstrap/cache</code> directories are writable by your web server.</li>
+                <li><strong>Configure cron jobs (if needed):</strong> Set up cron jobs for scheduled tasks (e.g., database backups).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h3>Heroku Deployment</h3>
+            <p>Heroku provides a platform-as-a-service that simplifies deployment. Follow these steps to deploy to Heroku:</p>
+
+            <h4>Prerequisites:</h4>
+            <ul>
+                <li>Heroku CLI</li>
+                <li>Heroku account</li>
+                <li>Git</li>
+            </ul>
+
+            <h4>Deployment Process:</h4>
+            <ol>
+                <li><strong>Log in to Heroku:</strong>
+                    <pre><code class="language-bash">heroku login</code></pre>
+                </li>
+                <li><strong>Create a new Heroku app:</strong>
+                    <pre><code class="language-bash">heroku create &lt;app-name&gt;</code></pre>
+                </li>
+                <li><strong>Add a buildpack:</strong> Heroku needs to know how to build your PHP application. You can use the official Heroku PHP buildpack.
+                    <pre><code class="language-bash">heroku buildpacks:add heroku/php</code><br /><code class="language-bash">heroku buildpacks:add heroku/nodejs</code><br /><code class="language-bash">heroku buildpacks:add https://github.com/heroku/heroku-buildpack-apt</code></pre>
+                </li>
+                 <li><strong>Provision a database (e.g., Heroku Postgres):</strong>
+                    <pre><code class="language-bash">heroku addons:create heroku-postgresql:&lt;plan&gt;</code></pre>
+                </li>
+                <li><strong>Set environment variables:</strong> Configure your database credentials and other environment variables using the Heroku CLI or the Heroku dashboard.
+                     <pre><code class="language-bash">heroku config:set APP_KEY=&lt;your_app_key&gt; DB_CONNECTION=&lt;your_db_connection&gt; DB_HOST=&lt;your_db_host&gt; ...</code></pre>
+                </li>
+                <li><strong>Push your code to Heroku:</strong>
+                    <pre><code class="language-bash">git push heroku main</code></pre>
+                </li>
+                <li><strong>Run database migrations on Heroku:</strong>
+                    <pre><code class="language-bash">heroku run php artisan migrate --force</code></pre>
+                </li>
+                 <li><strong>Run database seeders on Heroku (optional):</strong>
+                    <pre><code class="language-bash">heroku run php artisan db:seed --force</code></pre>
+                </li>
+                <li><strong>Scale your web dynos:</strong>
+                    <pre><code class="language-bash">heroku ps:scale web=1</code></pre>
+                </li>
+                 <li><strong>Configure scheduler (if needed):</strong> Use the Heroku Scheduler add-on to run scheduled tasks.</li>
+            </ol>
+            <p>Refer to the <a href="https://devcenter.heroku.com/articles/deploying-laravel" target="_blank">Heroku Dev Center</a> for more detailed information on deploying Laravel applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Hospital Information System. All rights reserved.</p>
+    </footer>
+</body>
+</html>
