@@ -2,50 +2,34 @@
 
 namespace Database\Seeders;
 
-/*use Illuminate\Database\Console\Seeds\WithoutModelEvents;*/
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 
 class ExpenseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DB::table('expenses')->insert([
-            [
-                'date' => now(),
-                'ward_id' => 1,
-                'note' => 'Monthly expense for ward 1',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'date' => now(),
-                'ward_id' => 2,
-                'note' => 'Monthly expense for ward 2',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'date' => now(),
-                'ward_id' => 3,
-                'note' => 'Monthly expense for ward 3',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'date' => now(),
-                'ward_id' => 4,
-                'note' => 'Monthly expense for ward 4',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        $baseDate = Carbon::now();
+
+        for ($ward = 1; $ward <= 4; $ward++) {
+            $date = $baseDate->copy()->addDays($ward)->toDateString();
+
+            $exists = DB::table('expenses')
+                ->where('date', $date)
+                ->where('ward_id', $ward)
+                ->exists();
+
+            if (!$exists) {
+                DB::table('expenses')->insert([
+                    'date' => $date,
+                    'ward_id' => $ward,
+                    'note' => "Monthly expense for ward $ward",
+                    'user_id' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
     }
 }
