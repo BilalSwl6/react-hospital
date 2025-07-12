@@ -25,16 +25,17 @@ class DatabaseSeeder extends Seeder
             ]);
 
             DbBackupRecord::factory(5)->create();
+            Expense::factory(100)->create();
+
 
             $this->call([
                 WardSeeder::class,
                 GenericSeeder::class,
                 MedicineSeeder::class,
-                ExpenseSeeder::class,
+                // ExpenseSeeder::class,
                 ExpenseRecordSeeder::class,
             ]);
         }
 
-        Expense::factory(100)->create();
     }
 }
