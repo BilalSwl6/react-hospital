@@ -238,8 +238,6 @@ export default function DbBackup({ records: initialRecords }: { records: Records
             });
     }
 
-    
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Database Backup" />
@@ -250,11 +248,11 @@ export default function DbBackup({ records: initialRecords }: { records: Records
                         title="Database Backup Records"
                         description="View and manage database backup records with their current status and details."
                     />
-{appEnv === 'development' && (
-    <div className="rounded-xl border border-yellow-400 bg-yellow-50 p-4 text-sm text-yellow-800 shadow-sm">
-        ⚠️ <strong>Demo Mode:</strong> This feature is disabled. It will not work in demo mode.
-    </div>
-)}
+                    {appEnv === 'development' && (
+                        <div className="rounded-xl border border-yellow-500 bg-yellow-50 p-4 text-sm text-yellow-800 shadow-sm">
+                             <strong>Demo Mode:</strong> This feature is disabled. It will not work in demo mode.
+                        </div>
+                    )}
                     <div className="flex items-center justify-end gap-3">
                         <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing} className="min-w-[100px]">
                             {isRefreshing ? 'Refreshing...' : 'Refresh'}

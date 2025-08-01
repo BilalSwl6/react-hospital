@@ -51,10 +51,10 @@ php artisan db:seed       # (Optional) To seed demo data
 ### 5. Start the Development Server
 
 ```bash
-# Option 1: Combined
+# Option 1: Combined - start everything like job listensers etc... (Recommended)
 composer run dev
 
-# Option 2: Separate
+# Option 2: Separate - (Not-Recommended)
 php artisan serve
 npm run dev
 ```
