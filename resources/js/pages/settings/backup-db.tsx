@@ -5,9 +5,9 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import { PageProps as InertiaPageProps, Page } from '@inertiajs/core';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -189,6 +189,7 @@ export default function DbBackup({ records: initialRecords }: { records: Records
     const [records, setRecords] = useState<Records[]>(initialRecords);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const appEnv = usePage<SharedData>().props.appEnv;
 
     function handleRefresh() {
         setIsRefreshing(true);
@@ -237,6 +238,8 @@ export default function DbBackup({ records: initialRecords }: { records: Records
             });
     }
 
+    
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Database Backup" />
@@ -247,7 +250,11 @@ export default function DbBackup({ records: initialRecords }: { records: Records
                         title="Database Backup Records"
                         description="View and manage database backup records with their current status and details."
                     />
-
+{appEnv === 'development' && (
+    <div className="rounded-xl border border-yellow-400 bg-yellow-50 p-4 text-sm text-yellow-800 shadow-sm">
+        ⚠️ <strong>Demo Mode:</strong> This feature is disabled. It will not work in demo mode.
+    </div>
+)}
                     <div className="flex items-center justify-end gap-3">
                         <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing} className="min-w-[100px]">
                             {isRefreshing ? 'Refreshing...' : 'Refresh'}
