@@ -95,11 +95,6 @@ const WardIndex = ({ data }: PageProps) => {
               pagination={data.meta}
               searchable
               search_route={route('wards.index')}
-              button={
-                <>
-                <Button>Click me</Button>
-                </>
-              }
             />
           </div>
         </div>

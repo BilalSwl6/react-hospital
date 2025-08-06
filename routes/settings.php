@@ -3,6 +3,7 @@
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\DbBackupController;
+use App\Http\Controllers\Admin\ManageUserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,4 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/backup/database', [DbBackupController::class, 'backup'])->name('backup.database');
     Route::get('/settings/backup', [DbBackupController::class, 'index'])->name('backup.index');
     Route::get('/backup/status', [DbBackupController::class, 'status']);
+});
+
+
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::resource('/users', ManageUserController::class)->except(['edit', 'create']);
 });
