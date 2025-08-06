@@ -4,6 +4,7 @@ use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\DbBackupController;
 use App\Http\Controllers\Admin\ManageUserController;
+use App\Http\Controllers\Admin\ManageRoleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,5 +29,6 @@ Route::middleware('auth')->group(function () {
 
 
 Route::prefix('admin')->middleware('auth')->group(function () {
-    Route::resource('/users', ManageUserController::class)->except(['edit', 'create']);
+    Route::resource('/users', ManageUserController::class)->except(['edit', 'create', 'show']);
+    Route::resource('/roles', ManageRoleController::class)->except(['edit', 'create', 'show']);
 });

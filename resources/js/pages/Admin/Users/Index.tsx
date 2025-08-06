@@ -1,84 +1,140 @@
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import UserForm from './Form';
+import Modal from '@/components/model';
+import { ColumnHeader } from '@/components/table/column-header';
+import DataTable from '@/components/table/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { type PaginationProps } from '@/components/table/pagination';
 
 interface User {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  password?: string;
+}
+
+interface PageProps {
+  users: {
+    meta: PaginationProps;
+    data: User[];
+  };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Admin',
-        href: '/admin',
-    },
-    {
-        title: 'Users',
-        href: '/users',
-    },
+  { title: 'Admin', href: '/admin' },
+  { title: 'Users', href: '/users' },
 ];
 
-export default function Dashboard({ users }: { users: User[] }) {
+export default function Dashboard({ users }: PageProps) {
     const [open, setOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
+    
 
-    const HandleDelete = (user: User) => {
-        if (!confirm('Are you sure you want to delete this user?')) return;
+  const handleDelete = (user: User) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
 
-        setSelectedUser(user);
+    setSelectedUser(user);
 
-        router.delete(route('users.destroy', user.id), {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => toast.success('User deleted'),
-            onError: () => toast.error('Failed to delete user'),
-            onFinish: () => setSelectedUser(null),
-        });
-    };
+    router.delete(route('users.destroy', user.id), {
+      preserveScroll: true,
+      preserveState: true,
+      onFinish: () => setSelectedUser(null),
+    });
+  };
 
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Users" />
-            <div className="flex h-full flex-1 flex-col gap-4 p-4">
-                <div>
-                    <Button>Create</Button>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>ID</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Action</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {users.map((user, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{user.name}</TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.role}</TableCell>
-                                    <TableCell>
-                                        <Button className="mr-2" variant={'secondary'}>
-                                            Edit
-                                        </Button>
-                                        <Button variant="destructive" onClick={() => HandleDelete(user)} disabled={selectedUser?.id === user.id}>
-                                            {selectedUser?.id === user.id ? 'Removing...' : 'Remove'}
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-        </AppLayout>
-    );
+  const handleEdit = (user: User) => {
+    setSelectedUser(user);
+    setOpen(true);
+  };
+
+  const handleCreate = () => {
+    setSelectedUser(null);
+    setOpen(true);
+  };
+
+  const columns = useMemo<ColumnDef<User>[]>(
+    () => [
+      {
+        accessorKey: 'name',
+        header: ({ column }) => <ColumnHeader column={column} title="User Name" />,
+        cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
+      },
+      {
+        accessorKey: 'email',
+        header: ({ column }) => <ColumnHeader column={column} title="Email" />,
+        cell: ({ row }) => <div className="font-medium">{row.original.email}</div>,
+      },
+      {
+        accessorKey: 'role',
+        header: ({ column }) => <ColumnHeader column={column} title="Role" />,
+        cell: ({ row }) => <div className="font-medium">{row.original.role}</div>,
+      },
+      {
+        id: 'actions',
+        header: ({ column }) => <ColumnHeader column={column} title="Actions" />,
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => handleEdit(row.original)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => handleDelete(row.original)}
+              disabled={deletingUserId === row.original.id}
+            >
+              {deletingUserId === row.original.id ? 'Removing...' : 'Remove'}
+            </Button>
+          </div>
+        ),
+      },      
+    ],
+    [selectedUser]
+  );
+
+  return (
+    <AppLayout breadcrumbs={breadcrumbs}>
+      <Head title="Users" />
+      <div className="flex h-full flex-1 flex-col gap-4 p-4">
+        <div>
+          <Button onClick={handleCreate}>Create</Button>
+          <DataTable
+            data={users.data}
+            columns={columns}
+            pagination={users.meta}
+            searchable
+            search_route={route('users.index')}
+          />
+        </div>
+      </div>
+
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title={selectedUser ? 'Edit User' : 'Create User'}
+        description={
+          selectedUser
+            ? 'Update the user information below.'
+            : 'Fill the form to create a new user.'
+        }
+        size="lg"
+        confirmBeforeClose={false}
+      >
+        <UserForm
+        //   user={selectedUser}
+          onClose={() => setOpen(false)}
+    {...(selectedUser && { user: selectedUser })}
+  />
+      </Modal>
+    </AppLayout>
+  );
 }

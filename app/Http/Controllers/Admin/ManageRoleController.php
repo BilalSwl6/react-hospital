@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Resources\Roles\RolesResource;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class ManageRoleController extends Controller
 {
@@ -13,7 +16,12 @@ class ManageRoleController extends Controller
      */
     public function index()
     {
-        //
+        $roles = Role::paginate(15);
+        $permission = Permission::all();
+        return Inertia::render("Admin/Roles/Index", [
+            "roles"=> RolesResource::collection($roles),
+            "permission"=> $permission,
+        ]);
     }
 
     /**
@@ -29,7 +37,13 @@ class ManageRoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validared = $request->validate([
+            "name"=> "string|required"
+        ]);
+
+        $role = Role::create($validared);
+
+        return redirect()->back()->with("success","Role is Created Successfully");
     }
 
     /**
@@ -53,7 +67,15 @@ class ManageRoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            "name"=> "string|required"
+        ]);
+
+        $role = Role::findOrFail($id);
+        $role->update($validated);
+        $role->save();
+
+        return redirect()->back()->with("success","Role is Updated Successfully");
     }
 
     /**
@@ -61,6 +83,9 @@ class ManageRoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        $role->delete();
+
+        return redirect()->back()->with("info","Role is Deleted Successfully");
     }
 }
