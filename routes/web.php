@@ -1,13 +1,19 @@
 <?php
 
+use App\Http\Controllers\drugDeptController\DrugDeptController;
 use App\Http\Controllers\drugDeptController\ExpenseController;
 use App\Http\Controllers\drugDeptController\ExpenseRecordController;
 use App\Http\Controllers\drugDeptController\GenericController;
 use App\Http\Controllers\drugDeptController\MedicineController;
 use App\Http\Controllers\drugDeptController\WardController;
-use App\Http\Controllers\drugDeptController\DrugDeptController;
+use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -19,14 +25,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware(['auth', 'verified'])->group(function () {
-
     Route::get('/api/dashboard', [DrugDeptController::class, 'dashboard'])->name('dashboard.api');
-
-    
 
     Route::get('/wards/search', [WardController::class, 'search'])->name('wards.search');
     Route::resource('wards', WardController::class);
@@ -40,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('generics', GenericController::class);
     Route::resource('expenseRecord', ExpenseRecordController::class)->except(['create', 'edit']);
     Route::post('expense/export-to-excel', [ExpenseController::class, 'exportToExcel'])->name('expense.export-to-excel');
-    Route::get('expense/export', [ExpenseController::class, 'ExportExcelView' ])->name('expense.export');
+    Route::get('expense/export', [ExpenseController::class, 'ExportExcelView'])->name('expense.export');
     Route::resource('expense', ExpenseController::class);
     Route::get('expenseRecord/create/{expense_id}', [ExpenseRecordController::class, 'create'])->name('expenseRecord.create');
     Route::put('expenseRecord/{id}', [ExpenseRecordController::class, 'update'])->name('expenseRecord.update');
@@ -50,5 +53,61 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('shortcut');
     })->name('shortcut');
 
+});
 
+Route::get('/reset-demo', function () {
+    abort_unless(app()->environment(['local', 'demo']), 403);
+
+    foreach (User::all() as $user) {
+        $user->syncRoles([]);
+        $user->syncPermissions([]);
+    }
+
+    // 3. Delete all roles, permissions and related pivot table data
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    DB::table('model_has_permissions')->truncate();
+    DB::table('model_has_roles')->truncate();
+    DB::table('role_has_permissions')->truncate();
+    Permission::truncate();
+    Role::truncate();
+
+    // 4. Re-run permission seeder
+    Artisan::call('db:seed', [
+        '--class' => 'PermissionSeeder',
+        '--force' => true,
+    ]);
+
+    // 5. Define and create demo users
+    $demoUsers = [
+        [
+            'name' => 'Admin',
+            'email' => 'admin@mail.com',
+            'role' => 'admin',
+        ],
+        [
+            'name' => 'Pharmacy Technician',
+            'email' => 'pharmacy@mail.com',
+            'role' => 'pharmacy-technician',
+        ],
+        [
+            'name' => 'Standard User',
+            'email' => 'user@mail.com',
+            'role' => 'user',
+        ],
+    ];
+
+    foreach ($demoUsers as $demo) {
+        $user = User::updateOrCreate(
+            ['email' => $demo['email']],
+            [
+                'name' => $demo['name'],
+                'password' => Hash::make('12345678'),
+            ]
+        );
+
+        // Assign role to user
+        $user->syncRoles([$demo['role']]);
+    }
+
+    return '✅ Demo users reset. Roles/permissions cleaned & re-seeded.';
 });
