@@ -1,19 +1,20 @@
 <?php
 
-use App\Http\Controllers\drugDeptController\DrugDeptController;
-use App\Http\Controllers\drugDeptController\ExpenseController;
-use App\Http\Controllers\drugDeptController\ExpenseRecordController;
-use App\Http\Controllers\drugDeptController\GenericController;
-use App\Http\Controllers\drugDeptController\MedicineController;
-use App\Http\Controllers\drugDeptController\WardController;
 use App\Models\User;
-use Illuminate\Support\Facades\Artisan;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
+use App\Http\Controllers\drugDeptController\WardController;
+use App\Http\Controllers\drugDeptController\ExpenseController;
+use App\Http\Controllers\drugDeptController\GenericController;
+use App\Http\Controllers\drugDeptController\DrugDeptController;
+use App\Http\Controllers\drugDeptController\MedicineController;
+use App\Http\Controllers\drugDeptController\ExpenseRecordController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -55,59 +56,65 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
+
+
 Route::get('/reset-demo', function () {
     abort_unless(app()->environment(['local', 'demo']), 403);
 
-    foreach (User::all() as $user) {
-        $user->syncRoles([]);
-        $user->syncPermissions([]);
-    }
+    DB::transaction(function () {
+        // 1. Remove all roles & permissions from users
+        foreach (User::all() as $user) {
+            $user->syncRoles([]);
+            $user->syncPermissions([]);
+        }
 
-    // 3. Delete all roles, permissions and related pivot table data
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-    DB::table('model_has_permissions')->truncate();
-    DB::table('model_has_roles')->truncate();
-    DB::table('role_has_permissions')->truncate();
-    Permission::truncate();
-    Role::truncate();
+        // 2. Forget cached permissions
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-    // 4. Re-run permission seeder
-    Artisan::call('db:seed', [
-        '--class' => 'PermissionSeeder',
-        '--force' => true,
-    ]);
+        // 3. Delete all role/permission pivot data and actual roles/permissions
+        DB::table('model_has_permissions')->delete();
+        DB::table('model_has_roles')->delete();
+        DB::table('role_has_permissions')->delete();
+        DB::table('permissions')->delete();
+        DB::table('roles')->delete();
 
-    // 5. Define and create demo users
-    $demoUsers = [
-        [
-            'name' => 'Admin',
-            'email' => 'admin@mail.com',
-            'role' => 'admin',
-        ],
-        [
-            'name' => 'Pharmacy Technician',
-            'email' => 'pharmacy@mail.com',
-            'role' => 'pharmacy-technician',
-        ],
-        [
-            'name' => 'Standard User',
-            'email' => 'user@mail.com',
-            'role' => 'user',
-        ],
-    ];
+        // 4. Re-seed permissions and roles
+        Artisan::call('db:seed', [
+            '--class' => 'PermissionSeeder',
+            '--force' => true,
+        ]);
 
-    foreach ($demoUsers as $demo) {
-        $user = User::updateOrCreate(
-            ['email' => $demo['email']],
+        // 5. Create or update demo users with roles
+        $demoUsers = [
             [
-                'name' => $demo['name'],
-                'password' => Hash::make('12345678'),
-            ]
-        );
+                'name' => 'Admin',
+                'email' => 'admin@mail.com',
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Pharmacy Technician',
+                'email' => 'pharmacy@mail.com',
+                'role' => 'pharmacy-technician',
+            ],
+            [
+                'name' => 'Standard User',
+                'email' => 'user@mail.com',
+                'role' => 'user',
+            ],
+        ];
 
-        // Assign role to user
-        $user->syncRoles([$demo['role']]);
-    }
+        foreach ($demoUsers as $demo) {
+            $user = User::updateOrCreate(
+                ['email' => $demo['email']],
+                [
+                    'name' => $demo['name'],
+                    'password' => Hash::make('12345678'),
+                ]
+            );
+
+            $user->syncRoles([$demo['role']]);
+        }
+    });
 
     return '✅ Demo users reset. Roles/permissions cleaned & re-seeded.';
 });
