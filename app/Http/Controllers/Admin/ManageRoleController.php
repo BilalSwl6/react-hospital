@@ -3,89 +3,63 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Roles\RolesResource;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Resources\Roles\RolesResource;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class ManageRoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $roles = Role::paginate(15);
-        $permission = Permission::all();
-        return Inertia::render("Admin/Roles/Index", [
-            "roles"=> RolesResource::collection($roles),
-            "permission"=> $permission,
+        $roles = Role::with([
+            'permissions' => function ($query) {
+                $query->orderBy('name');
+            }
+        ])->paginate(15);
+        $permissions = Permission::orderBy('name', 'asc')->get();
+
+        return Inertia::render('Admin/Roles/Index', [
+            'roles' => RolesResource::collection($roles),
+            'permissions' => $permissions,
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validared = $request->validate([
-            "name"=> "string|required"
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'permission_name' => 'required|array',
         ]);
 
-        $role = Role::create($validared);
+        $role = Role::create(['name' => $validated['name']]);
 
-        return redirect()->back()->with("success","Role is Created Successfully");
+        $permissions = array_unique(array_merge($validated['permission_name'], ['allow.always']));
+        $role->syncPermissions($permissions);
+
+        return redirect()->back()->with('success', 'Role is Created Successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            "name"=> "string|required"
+            'name' => 'required|string',
+            'permission_name' => 'required|array',
         ]);
 
         $role = Role::findOrFail($id);
-        $role->update($validated);
-        $role->save();
+        $role->update(['name' => $validated['name']]);
+        $role->syncPermissions($validated['permission_name']);
 
-        return redirect()->back()->with("success","Role is Updated Successfully");
+        return redirect()->back()->with('success', 'Role is Updated Successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $role = Role::findOrFail($id);
         $role->delete();
 
-        return redirect()->back()->with("info","Role is Deleted Successfully");
+        return redirect()->back()->with('info', 'Role is Deleted Successfully');
     }
 }

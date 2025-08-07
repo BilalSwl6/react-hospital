@@ -113,7 +113,7 @@ const ViewLogDialog = ({ medicineId, medicineName }: PageProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="link" size="sm">
+                <Button variant="outline" size="sm">
                     <ReceiptText className="mr-2 h-4 w-4" />
                     View Logs
                 </Button>

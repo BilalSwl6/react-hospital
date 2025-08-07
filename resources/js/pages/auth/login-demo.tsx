@@ -23,8 +23,6 @@ interface LoginProps {
     canResetPassword: boolean;
 }
 
-
-
 export default function Login({ status, canResetPassword }: LoginProps) {
     const { data, setData, post, processing, errors, reset } = useForm<Required<LoginForm>>({
         email: '',
@@ -40,7 +38,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     const appEnv = usePage<SharedData>().props.appEnv;
-    
 
     return (
         <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
@@ -103,13 +100,61 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Button>
                 </div>
 
-                <div className="text-muted-foreground text-center text-sm">
-                    Don't have an account?{' '}
-                    <TextLink href={route('register')} tabIndex={5}>
-                        Sign up
-                    </TextLink>
-                </div>
+                {appEnv == 'demo' && (
+                    <div className="text-muted-foreground text-center text-sm">
+                        Don't have an account?{' '}
+                        <TextLink href={route('register')} tabIndex={5}>
+                            Sign up
+                        </TextLink>
+                    </div>
+                )}
             </form>
+
+            <div>
+                <p className="text-muted-foreground mb-2 text-center text-sm font-medium">Demo Accounts</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                            setData((prev) => ({
+                                ...prev,
+                                email: 'admin@mail.com',
+                                password: '12345678',
+                            }));
+                        }}
+                    >
+                        Admin Login
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                            setData((prev) => ({
+                                ...prev,
+                                email: 'pharmacy@mail.com',
+                                password: '12345678',
+                            }));
+                        }}
+                    >
+                        Pharmacy Technician
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                            setData((prev) => ({
+                                ...prev,
+                                email: 'user@mail.com',
+                                password: '12345678',
+                            }));
+                        }}
+                    >
+                        User
+                    </Button>
+                </div>
+                <p className="text-muted-foreground mt-4 text-center text-xs">I am working actively on new features/profile/account</p>
+            </div>
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
         </AuthLayout>

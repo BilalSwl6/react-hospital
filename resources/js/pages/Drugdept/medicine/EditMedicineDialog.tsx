@@ -34,7 +34,7 @@ const EditMedicineDialog = ({ generic, medicine, onOpenChange }: PageProps) => {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant="link" size="sm">
+                <Button variant="link" size="sm" className='bg-green-600'>
                     <Pencil className="mr-1 h-3 w-3" />
                     Edit
                 </Button>

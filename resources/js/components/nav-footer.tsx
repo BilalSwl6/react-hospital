@@ -1,5 +1,6 @@
 import { Icon } from '@/components/icon';
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { can } from '@/lib/can';
 import { type NavItem } from '@/types';
 import { type ComponentPropsWithoutRef } from 'react';
 
@@ -14,7 +15,8 @@ export function NavFooter({
         <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
             <SidebarGroupContent>
                 <SidebarMenu>
-                    {items.map((item) => (
+                    {items.filter((item) => can(item.permission))
+                    .map((item) => (
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
                                 asChild

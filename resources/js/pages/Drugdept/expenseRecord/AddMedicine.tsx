@@ -233,6 +233,7 @@ function AddMedicine({ message, expense, expense_id, medicines }: PageProps) {
         });
     };
 
+    
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 

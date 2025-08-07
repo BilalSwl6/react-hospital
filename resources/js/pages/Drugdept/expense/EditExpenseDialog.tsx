@@ -1,15 +1,8 @@
-import React from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import ExpenseForm from './ExpenseForm';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Pencil } from 'lucide-react';
+import React from 'react';
+import ExpenseForm from './ExpenseForm';
 import { Expense, Ward } from './index';
 
 interface PageProps {
@@ -27,17 +20,15 @@ const EditExpenseDialog = ({ wards, expense }: PageProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="link" size="sm">
+                <Button variant="link" size="sm" className="bg-green-600">
                     <Pencil className="mr-1 h-3 w-3" />
                     Edit
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto custom-scrollbar">
+            <DialogContent className="custom-scrollbar max-h-[80vh] overflow-y-auto sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle>Edit Expense record</DialogTitle>
-                    <DialogDescription>
-                        Update the Expense record information.
-                    </DialogDescription>
+                    <DialogDescription>Update the Expense record information.</DialogDescription>
                 </DialogHeader>
                 <ExpenseForm wards={wards} expense={expense} closeModal={closeModal} isEditing={true} />
             </DialogContent>

@@ -248,8 +248,8 @@ export default function DbBackup({ records: initialRecords }: { records: Records
                         title="Database Backup Records"
                         description="View and manage database backup records with their current status and details."
                     />
-                    {appEnv === 'development' && (
-                        <div className="rounded-xl border border-yellow-500 bg-yellow-50 p-4 text-sm text-yellow-800 shadow-sm">
+                    {appEnv === 'demo' && (
+                        <div className="rounded-xl border border-yellow-500 p-4 text-sm text-yellow-600 shadow-sm">
                              <strong>Demo Mode:</strong> This feature is disabled. It will not work in demo mode.
                         </div>
                     )}

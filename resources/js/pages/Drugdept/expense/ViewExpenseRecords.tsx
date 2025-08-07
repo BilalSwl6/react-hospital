@@ -21,6 +21,7 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { router } from '@inertiajs/react';
+import { can } from '@/lib/can';
 
 interface ExpenseRecord {
     id: number;
@@ -71,7 +72,7 @@ function EditExpenseRecordDialog({ record, onClose }: { record: ExpenseRecord; o
                         <DialogDescription>Edit the details of this expense record.</DialogDescription>
                     </DialogHeader>
                     <div className="mb-4">
-                        <Label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+                        <Label htmlFor="quantity" className="block text-sm font-medium">
                             Quantity
                         </Label>
                         <Input
@@ -164,6 +165,7 @@ const ViewExpenseRecords = ({ expenseId }: PageProps) => {
                                         </TableCell>
                                         <TableCell>{record.quantity}</TableCell>
                                         <TableCell className="space-x-2">
+                                            {can('expenseRecord.edit') && (
                                             <Button
                                                 variant="secondary"
                                                 size="sm"
@@ -171,6 +173,8 @@ const ViewExpenseRecords = ({ expenseId }: PageProps) => {
                                             >
                                                 Edit
                                             </Button>
+                                            )}
+                                            {can('expenseRecord.delete') && (
                                             <Button
                                                 variant="destructive"
                                                 size="sm"
@@ -185,6 +189,7 @@ const ViewExpenseRecords = ({ expenseId }: PageProps) => {
                                             >
                                                 Delete
                                             </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}
