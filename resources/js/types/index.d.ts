@@ -18,11 +18,13 @@ export interface NavGroup {
 
 export interface NavItem {
     title: string;
-    href: string;
-    icon?: LucideIcon | null;
-    isActive?: boolean;
+    href?: string;
+    icon?: LucideIcon;
     permission: string;
-}
+    section?: string; 
+    children?: NavItem[]; 
+  }
+  
 
 export interface SharedData {
     name: string;

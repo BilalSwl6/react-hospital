@@ -9,36 +9,60 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-        permission: 'allow.always',
+      title: 'Dashboard',
+      href: '/dashboard',
+      icon: LayoutGrid,
+      permission: 'allow.always',
+      section: 'Platform',
     },
     {
-        title: 'Wards',
-        href: '/wards',
-        icon: HouseIcon,
-        permission: 'ward.view',
+      title: 'Wards',
+      href: '/wards',
+      icon: HouseIcon,
+      permission: 'ward.view',
+      section: 'Platform',
     },
     {
-        title: 'Medicines',
-        href: '/medicines',
+      title: 'Generics',
+      href: '/generics',
+      icon: FlaskRoundIcon,
+      permission: 'generic.view',
+      section: 'Platform',
+    },
+    {
+      title: 'Expense',
+      href: '/expense',
+      icon: ReceiptText,
+      permission: 'expense.view',
+      section: 'Platform',
+    },
+    {
+      title: 'Medicines',
+      href: '/medicines',
+      icon: PillIcon,
+      permission: 'medicine.view',
+      section: 'Platform',
+    },
+    {
+        title: 'Manage',
+        permission: 'user.view',
         icon: PillIcon,
-        permission: 'medicine.view',
-    },
-    {
-        title: 'Generics',
-        href: '/generics',
-        icon: FlaskRoundIcon,
-        permission: 'generic.view',
-    },
-    {
-        title: 'Expense',
-        href: '/expense',
-        icon: ReceiptText,
-        permission: 'expense.view',
-    },
-];
+        section: 'Admin',
+        children: [
+          {
+            title: 'Users',
+            href: '/admin/users',
+            permission: 'user.view',
+          },
+          {
+            title: 'Roles',
+            href: '/admin/roles',
+            permission: 'role.view',
+          },
+        ],
+      },
+  ];
+  
 
 const footerNavItems: NavItem[] = [
     {
