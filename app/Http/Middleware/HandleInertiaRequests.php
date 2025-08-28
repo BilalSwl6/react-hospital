@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 // use Illuminate\Foundation\Inspiring;
+use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -37,17 +38,22 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        /** @var \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard $auth */
+        $auth = auth();
         // [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        $settings = app(GeneralSettings::class);
+        // dd($settings->site_footer_credit);
 
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            // 'name' => config('app.name'),
             'appEnv' => config('app.env'),
             // 'quote' => ['message' => trim($message), 'author' => trim($author)],
+            /** @noinspection PhpUndefinedMethodInspection */
             'auth' => [
                 'user' => $request->user(),
-                'permissions' => auth()->check()
-                    ? auth()->user()->getAllPermissions()->pluck('name')
+                'permissions' => $auth->check()
+                    ? $auth->user()->getAllPermissions()->pluck('name')
                     : [],
             ],
             'ziggy' => fn(): array => [
@@ -60,6 +66,20 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
                 'warning' => $request->session()->get('warning'),
                 'info' => $request->session()->get('info'),
+            ],
+            'settings' => [
+                'name' => $settings->site_name,
+                'description' => $settings->site_description,
+                'logo' => $settings->site_logo
+                    ? asset('storage/' . $settings->site_logo)
+                    : null,
+                'favicon' => $settings->site_favicon
+                    ? asset('storage/' . $settings->site_favicon)
+                    : null,
+                'active' => $settings->site_active,
+                'timezone' => $settings->user_timezone,
+                'currency' => $settings->site_currency,
+                'footer_credit' => $settings->site_footer_credit,
             ],
         ];
     }

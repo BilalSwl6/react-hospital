@@ -12,6 +12,7 @@ class MedicineSeeder extends Seeder
      */
     public function run(): void
     {
+        $expiry_date = now()->addDays(500);
         DB::table('medicines')->insert([
             [
                 'name' => 'Tramax',
@@ -24,7 +25,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '100mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'PharmaSol Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -40,7 +41,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '10mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'Ameer Pharma Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -56,7 +57,7 @@ class MedicineSeeder extends Seeder
                 'strength' => null,
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'PharmaSol Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -72,7 +73,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '40mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'MTI Medical',
                 'status' => 1,
                 'image' => null,
@@ -88,7 +89,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '4mg',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'PharmaSol Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -104,7 +105,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '25mg',
                 'route' => 'Intramuscular',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'Neutro Pharma Private Limited',
                 'status' => 1,
                 'image' => null,
@@ -120,7 +121,7 @@ class MedicineSeeder extends Seeder
                 'strength' => '1g',
                 'route' => 'Intravenous',
                 'notes' => null,
-                'expiry_date' => fake()->date(),
+                'expiry_date' => $expiry_date,
                 'manufacturer' => 'MTI Medical',
                 'status' => 1,
                 'image' => null,

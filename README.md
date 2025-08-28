@@ -80,7 +80,7 @@ npm run dev
 ## 🛠 Optimization Plans
 
 * [x] User Authentication
-* [ ] Role & Permission Management
+* [x] Role & Permission Management
 * [ ] API Support for Mobile & Third-party Integration
 * [ ] Dockerization
 * [ ] Unit & Feature Testing

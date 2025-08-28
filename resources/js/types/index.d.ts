@@ -27,7 +27,7 @@ export interface NavItem {
   
 
 export interface SharedData {
-    name: string;
+    // name: string;
     appEnv: string;
     quote: { message: string; author: string };
     auth: Auth;
@@ -39,6 +39,16 @@ export interface SharedData {
         warning?: string;
         info?: string;
             };
+    settings: {
+        name: string;
+        description: string;
+        logo: string;
+        favicon: string;
+        active: boolean;
+        timezone: string;
+        currency: string;
+        footer_credit: string;
+    }
     [key: string]: unknown;
 }
 

@@ -5,6 +5,8 @@ use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\DbBackupController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\Admin\ManageRoleController;
+use App\Http\Controllers\Admin\GeneralSettingController;
+use App\Http\Controllers\Admin\MailSettingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,6 +31,14 @@ Route::middleware('auth')->group(function () {
 
 
 Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::redirect('settings', 'settings/general');
     Route::resource('/users', ManageUserController::class)->except(['edit', 'create', 'show']);
     Route::resource('/roles', ManageRoleController::class)->except(['edit', 'create', 'show']);
+    
+    Route::get('settings/general', [GeneralSettingController::class, 'index'])->name('settings.general');
+    Route::post('settings/general', [GeneralSettingController::class, 'update'])->name('settings.general.update');
+
+    Route::get('settings/mail', [MailSettingController::class, 'index'])->name('settings.mail');
+    Route::post('settings/mail', [MailSettingController::class, 'update'])->name('settings.mail.update');
+    Route::post('settings/mail/test', [MailSettingController::class, 'test'])->name('settings.mail.test');
 });
