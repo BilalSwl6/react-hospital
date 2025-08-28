@@ -40,14 +40,14 @@ export interface SharedData {
         info?: string;
             };
     settings: {
-        name: string;
-        description: string;
-        logo: string;
-        favicon: string;
-        active: boolean;
-        timezone: string;
-        currency: string;
-        footer_credit: string;
+        site_name: string;
+        site_description: string;
+        site_logo: string;
+        site_favicon: string;
+        site_active: boolean;
+        site_timezone: string;
+        site_currency: string;
+        site_footer_credit: string;
     }
     [key: string]: unknown;
 }

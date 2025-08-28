@@ -21,10 +21,10 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
                 <footer className="w-full border-t py-6">
                     <div className="container mx-auto flex flex-col space-y-2 p-4 px-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                         <p className="text-muted-foreground text-sm">
-                            &copy; {currentYear} - {usePage<SharedData>().props.settings.name}. All rights reserved.
+                            &copy; {currentYear} - {usePage<SharedData>().props.settings.site_name}. All rights reserved.
                         </p>
                         <p className="text-muted-foreground text-sm">
-                            Developed by <span dangerouslySetInnerHTML={{ __html: settings.footer_credit ?? '' }} />
+                            Developed by <span dangerouslySetInnerHTML={{ __html: settings.site_footer_credit ?? '' }} />
                         </p>
                     </div>
                 </footer>
