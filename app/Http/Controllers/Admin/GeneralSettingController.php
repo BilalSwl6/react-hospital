@@ -35,12 +35,10 @@ class GeneralSettingController extends Controller
 
         // Handle site_logo
         if ($request->hasFile('site_logo')) {
-            if ($settings->site_logo && Storage::disk('public')->exists($settings->site_logo)) {
-                Storage::disk('public')->delete($settings->site_logo);
-            }
+            Storage::disk('public')->delete($settings->site_logo ?? '');
 
             $extension = $request->file('site_logo')->getClientOriginalExtension();
-            $filePath = 'logo.' . $extension;
+            $filePath = 'logo.' . $extension;  // Or 'logo_' . time() . '.' . $extension
             $request->file('site_logo')->storeAs('', $filePath, 'public');
 
             $validated['site_logo'] = $filePath;
@@ -48,16 +46,18 @@ class GeneralSettingController extends Controller
 
         // Handle site_favicon
         if ($request->hasFile('site_favicon')) {
-            if ($settings->site_favicon && Storage::disk('public')->exists($settings->site_favicon)) {
-                Storage::disk('public')->delete($settings->site_favicon);
-            }
+            Storage::disk('public')->delete($settings->site_favicon ?? '');
 
             $extension = $request->file('site_favicon')->getClientOriginalExtension();
-            $filePath = 'favicon.' . $extension;
+            $filePath = 'favicon.' . $extension;  // Or 'favicon_' . time() . '.' . $extension
             $request->file('site_favicon')->storeAs('', $filePath, 'public');
 
             $validated['site_favicon'] = $filePath;
         }
+
+        // Save all settings
+        $settings->fill($validated);
+        $settings->save();
 
         // Update only filled fields or uploaded files
         foreach ($validated as $key => $value) {
