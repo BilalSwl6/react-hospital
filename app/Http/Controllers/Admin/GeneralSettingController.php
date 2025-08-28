@@ -33,39 +33,34 @@ class GeneralSettingController extends Controller
             'site_favicon' => 'nullable|file|image|max:1024'
         ]);
 
-        // Handle site_logo
+        $disk = Storage::disk('r2');
+
         if ($request->hasFile('site_logo')) {
-            Storage::disk('public')->delete($settings->site_logo ?? '');
-
+            $disk->delete($settings->site_logo ?? ''); // Optional: delete old file
+        
             $extension = $request->file('site_logo')->getClientOriginalExtension();
-            $filePath = 'logo.' . $extension;  // Or 'logo_' . time() . '.' . $extension
-            $request->file('site_logo')->storeAs('', $filePath, 'public');
-
-            $validated['site_logo'] = $filePath;
+            $filePath = 'logo_' . time() . '.' . $extension;
+        
+            $disk->putFileAs('', $request->file('site_logo'), $filePath);
+        
+            // Save full URL instead of just filename
+            $validated['site_logo'] = env('R2_DEVELOPMENT_URL') .'/'. $filePath;
         }
-
-        // Handle site_favicon
+        
         if ($request->hasFile('site_favicon')) {
-            Storage::disk('public')->delete($settings->site_favicon ?? '');
-
+            $disk->delete($settings->site_favicon ?? '');
+        
             $extension = $request->file('site_favicon')->getClientOriginalExtension();
-            $filePath = 'favicon.' . $extension;  // Or 'favicon_' . time() . '.' . $extension
-            $request->file('site_favicon')->storeAs('', $filePath, 'public');
-
-            $validated['site_favicon'] = $filePath;
+            $filePath = 'favicon_' . time() . '.' . $extension;
+        
+            $disk->putFileAs('', $request->file('site_favicon'), $filePath);
+        
+            // Save full URL
+            $validated['site_favicon'] = env('R2_DEVELOPMENT_URL') .'/'. $filePath;
         }
+        
 
-        // Save all settings
         $settings->fill($validated);
-        $settings->save();
-
-        // Update only filled fields or uploaded files
-        foreach ($validated as $key => $value) {
-            if ($request->filled($key) || $request->hasFile($key)) {
-                $settings->$key = $value;
-            }
-        }
-
         $settings->save();
 
         return redirect()->back()->with('success', 'Settings updated successfully!');

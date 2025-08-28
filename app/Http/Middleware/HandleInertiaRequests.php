@@ -70,12 +70,8 @@ class HandleInertiaRequests extends Middleware
             'settings' => [
                 'name' => $settings->site_name,
                 'description' => $settings->site_description,
-                'logo' => $settings->site_logo
-                    ? asset('storage/' . $settings->site_logo)
-                    : null,
-                'favicon' => $settings->site_favicon
-                    ? asset('storage/' . $settings->site_favicon)
-                    : null,
+                'logo' => $settings->site_logo,
+                'favicon' => $settings->site_favicon,
                 'active' => $settings->site_active,
                 'timezone' => $settings->user_timezone,
                 'currency' => $settings->site_currency,
