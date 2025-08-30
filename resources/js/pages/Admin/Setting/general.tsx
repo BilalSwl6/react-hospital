@@ -115,7 +115,7 @@ export default function GeneralSettingsPage({ settings }: GeneralSettingsProps) 
 
                             <div className="flex flex-col gap-2">
                                 <Label htmlFor="site_logo">Site Logo</Label>
-                                {isLogoUploaded() && <img src={`/storage/${settings.site_logo}`} alt="Site Logo" className="h-16 object-contain" />}
+                                {isLogoUploaded() && <img src={settings.site_logo} alt="Site Logo" className="h-16 object-contain" />}
                                 {data.site_logo && (
                                     <img src={URL.createObjectURL(data.site_logo)} alt="New Logo Preview" className="h-16 object-contain" />
                                 )}
@@ -136,7 +136,7 @@ export default function GeneralSettingsPage({ settings }: GeneralSettingsProps) 
                             <div className="flex flex-col gap-2">
                                 <Label htmlFor="site_favicon">Site Favicon</Label>
                                 {isFaviconUploaded() && (
-                                    <img src={`/storage/${settings.site_favicon}`} alt="Site Favicon" className="h-10 object-contain" />
+                                    <img src={settings.site_favicon} alt="Site Favicon" className="h-10 object-contain" />
                                 )}
                                 {data.site_favicon && (
                                     <img src={URL.createObjectURL(data.site_favicon)} alt="New Logo Preview" className="h-16 object-contain" />

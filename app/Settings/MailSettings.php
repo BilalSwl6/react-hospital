@@ -22,6 +22,15 @@ class MailSettings extends Settings
     public string $resend_key;
     public bool $is_env;
 
+    public static function encrypted(): array
+    {
+        return [
+            'resend_key',
+            'mailgun_secret',
+            'password',
+        ];
+    }
+
 
     public static function group(): string
     {

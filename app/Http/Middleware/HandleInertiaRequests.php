@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             // 'name' => config('app.name'),
+            'name' => $settings->site_name,
             'appEnv' => config('app.env'),
             // 'quote' => ['message' => trim($message), 'author' => trim($author)],
             /** @noinspection PhpUndefinedMethodInspection */

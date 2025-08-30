@@ -6,12 +6,12 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('general.site_name', 'Spatie');
-        $this->migrator->add('general.site_description', 'Spatie Laravel');
+        $this->migrator->add('general.site_name', 'HMS - Hospital Pharmacy Managment');
+        $this->migrator->add('general.site_description', 'HMS - Hospital Pharmacy Managment');
         $this->migrator->add('general.site_active', True);
         $this->migrator->add('general.site_logo', '/logo.png');
         $this->migrator->add('general.site_favicon', '/favicon.png');
-        $this->migrator->add('general.user_timezone', 'America/New_York');
+        $this->migrator->add('general.user_timezone', 'Asia/Karachi');
         $this->migrator->add('general.site_currency', 'RS');
         $this->migrator->add('general.site_footer_credit','<a href="https://www.facebook.com/Bilalswl.6" target="_blank">Bilal</a>');
     }

@@ -11,7 +11,7 @@ return new class extends SettingsMigration
         $this->migrator->add('mail.port', 587);
         $this->migrator->add('mail.username', 'your_username');
         $this->migrator->add('mail.password', 'your_password', true);
-        $this->migrator->add('mail.from_email', 'your_email');
+        $this->migrator->add('mail.from_email', 'a@a.a');
         $this->migrator->add('mail.from_name', 'your_name');
         $this->migrator->add('mail.encryption', 'tls');
         $this->migrator->add('mail.settings', 'queue');

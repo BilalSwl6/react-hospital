@@ -5,8 +5,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Dialog } from '@headlessui/react';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { type BreadcrumbItem, type SharedData } from '@/types';
+
 
 interface MailSettingsProps {
     mailSettings: {
@@ -17,6 +19,8 @@ interface MailSettingsProps {
         password: string;
         from_email: string;
         from_name: string;
+        encryption: string;
+        settings: string;
         mailgun_domain: string;
         mailgun_secret: string;
         mailgun_endpoint: string;
@@ -33,6 +37,8 @@ export default function MailSettingsPage({ mailSettings }: MailSettingsProps) {
         password: mailSettings.password || "",
         from_email: mailSettings.from_email || "",
         from_name: mailSettings.from_name || "",
+        encryption: mailSettings.encryption || "",
+        settings: mailSettings.settings || "",
         mailgun_domain: mailSettings.mailgun_domain || "",
         mailgun_secret: mailSettings.mailgun_secret || "",
         mailgun_endpoint: mailSettings.mailgun_endpoint || "",
@@ -42,12 +48,13 @@ export default function MailSettingsPage({ mailSettings }: MailSettingsProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [testEmail, setTestEmail] = useState("");
     const [sending, setSending] = useState(false);
+    const appEnv = usePage<SharedData>().props.appEnv;
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route("settings.mail.update"), {
             preserveScroll: true,
-            // forceFormData: true,
         });
     };
 
@@ -74,6 +81,11 @@ export default function MailSettingsPage({ mailSettings }: MailSettingsProps) {
             <div className="p-6 space-y-6">
                 <h1 className="text-2xl font-bold">Mail Settings</h1>
 
+                {appEnv === 'demo' && (
+                        <div className="rounded-xl border border-yellow-500 p-4 text-sm text-yellow-600 shadow-sm">
+                             <strong>Demo Mode:</strong> "Send Test Mail" feature is disabled. It will not work in demo mode.
+                        </div>
+                    )}
                 {/* Settings Form */}
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Provider */}
@@ -142,6 +154,34 @@ export default function MailSettingsPage({ mailSettings }: MailSettingsProps) {
                                 <Label>Password</Label>
                                 <Input type="password" value={data.password} onChange={(e) => setData("password", e.target.value)} />
                                 <InputError message={errors.password} />
+                            </div>
+
+                            <div>
+                                <Label>Encryption</Label>
+                                <Select value={data.encryption} onValueChange={(val) => setData("encryption", val)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select encryption" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="tls">TLS</SelectItem>
+                                        <SelectItem value="ssl">SSL</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.encryption} />
+                            </div>
+
+                            <div>
+                                <Label>Settings</Label>
+                                <Select value={data.settings} onValueChange={(val) => setData("settings", val)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select settings" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="queue">Queue</SelectItem>
+                                        <SelectItem value="sync">Sync</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.settings} />
                             </div>
                         </>
                     )}

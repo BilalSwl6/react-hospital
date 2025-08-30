@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Settings\GeneralSettings;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Settings\GeneralSettings;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class GeneralSettingController extends Controller
 {
@@ -35,32 +35,38 @@ class GeneralSettingController extends Controller
 
         $disk = Storage::disk('r2');
 
+        // Handle site_logo upload
         if ($request->hasFile('site_logo')) {
-            $disk->delete($settings->site_logo ?? ''); // Optional: delete old file
-        
+            if ($settings->site_logo) {
+                // remove old file (strip URL if needed)
+                $disk->delete(basename($settings->site_logo));
+            }
+
             $extension = $request->file('site_logo')->getClientOriginalExtension();
             $filePath = 'logo_' . time() . '.' . $extension;
-        
+
             $disk->putFileAs('', $request->file('site_logo'), $filePath);
-        
-            // Save full URL instead of just filename
-            $validated['site_logo'] = env('R2_DEVELOPMENT_URL') .'/'. $filePath;
+
+            $settings->site_logo = env('R2_DEVELOPMENT_URL') . '/' . $filePath;
         }
-        
+
+        // Handle site_favicon upload
         if ($request->hasFile('site_favicon')) {
-            $disk->delete($settings->site_favicon ?? '');
-        
+            if ($settings->site_favicon) {
+                $disk->delete(basename($settings->site_favicon));
+            }
+
             $extension = $request->file('site_favicon')->getClientOriginalExtension();
             $filePath = 'favicon_' . time() . '.' . $extension;
-        
-            $disk->putFileAs('', $request->file('site_favicon'), $filePath);
-        
-            // Save full URL
-            $validated['site_favicon'] = env('R2_DEVELOPMENT_URL') .'/'. $filePath;
-        }
-        
 
-        $settings->fill($validated);
+            $disk->putFileAs('', $request->file('site_favicon'), $filePath);
+
+            $settings->site_favicon = env('R2_DEVELOPMENT_URL') . '/' . $filePath;
+        }
+
+        // Update other fields except logo & favicon
+        $settings->fill(collect($validated)->except(['site_logo', 'site_favicon'])->toArray());
+
         $settings->save();
 
         return redirect()->back()->with('success', 'Settings updated successfully!');
