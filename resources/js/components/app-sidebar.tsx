@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BriefcaseBusiness, FlaskRoundIcon, FocusIcon, HouseIcon, LayoutGrid, PillIcon, ReceiptText, Settings } from 'lucide-react';
+import { BriefcaseBusiness, FileSliders, FlaskRoundIcon, FocusIcon, HouseIcon, LayoutGrid, PillIcon, ReceiptText, Settings } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -41,6 +41,13 @@ const mainNavItems: NavItem[] = [
         href: '/medicines',
         icon: PillIcon,
         permission: 'medicine.view',
+        section: 'Platform',
+    },
+    {
+        title: 'Reports',
+        href: '/reports',
+        icon: FileSliders,
+        permission: 'allow.always',
         section: 'Platform',
     },
     {

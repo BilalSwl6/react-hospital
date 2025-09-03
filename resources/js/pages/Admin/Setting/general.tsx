@@ -47,14 +47,13 @@ export default function GeneralSettingsPage({ settings }: GeneralSettingsProps) 
         const payload = {
             site_name: data.site_name.trim(),
             site_description: data.site_description?.trim() ?? null,
-            site_active: data.site_active ? 1 : 0,   // make sure it's 1/0 or true/false
+            site_active: data.site_active ? 1 : 0, // make sure it's 1/0 or true/false
             user_timezone: data.user_timezone || 'UTC',
             site_currency: data.site_currency.trim() || '$',
             site_footer_credit: data.site_footer_credit?.trim() ?? null,
             site_logo: data.site_logo,
             site_favicon: data.site_favicon,
         };
-        
 
         router.post(route('settings.general.update'), payload, {
             preserveScroll: true,
@@ -113,45 +112,55 @@ export default function GeneralSettingsPage({ settings }: GeneralSettingsProps) 
                                 <InputError message={errors.site_description} />
                             </div>
 
-                            <div className="flex flex-col gap-2">
+                            <div className="grid gap-4">
                                 <Label htmlFor="site_logo">Site Logo</Label>
-                                {isLogoUploaded() && <img src={settings.site_logo} alt="Site Logo" className="h-16 object-contain" />}
-                                {data.site_logo && (
-                                    <img src={URL.createObjectURL(data.site_logo)} alt="New Logo Preview" className="h-16 object-contain" />
-                                )}
-                                <Input
-                                    id="site_logo"
-                                    name="site_logo"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        setData('site_logo', file ?? undefined); // use undefined if no file
-                                    }}
-                                />
-                                <InputError message={errors.site_logo} />
+                                <div className="flex gap-2">
+                                    {isLogoUploaded() && <img src={settings.site_logo} alt="Site Logo" className="h-16 object-contain" />}
+                                    {data.site_logo && (
+                                        <img src={URL.createObjectURL(data.site_logo)} alt="New Logo Preview" className="h-16 object-contain" />
+                                    )}
+                                    <Input
+                                        id="site_logo"
+                                        name="site_logo"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            setData('site_logo', file ?? undefined); // use undefined if no file
+                                        }}
+                                    />
+                                    {isLogoUploaded() && (
+                                        <Button onClick={() => router.post(route('settings.settings.general.remove-logo'))}>Remove</Button>
+                                    )}
+                                    <InputError message={errors.site_logo} />
+                                </div>
                             </div>
 
-                            {/* Site Favicon */}
-                            <div className="flex flex-col gap-2">
+                            <div className="grid gap-4">
                                 <Label htmlFor="site_favicon">Site Favicon</Label>
-                                {isFaviconUploaded() && (
-                                    <img src={settings.site_favicon} alt="Site Favicon" className="h-10 object-contain" />
-                                )}
-                                {data.site_favicon && (
-                                    <img src={URL.createObjectURL(data.site_favicon)} alt="New Logo Preview" className="h-16 object-contain" />
-                                )}
-                                <Input
-                                    id="site_favicon"
-                                    name="site_favicon"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0] || null;
-                                        setData('site_favicon', file ?? undefined);
-                                    }}
-                                />
-                                <InputError message={errors.site_favicon} />
+                                <div className="flex flex-col gap-2">
+                                    {isFaviconUploaded() && <img src={settings.site_favicon} alt="Site Favicon" className="h-10 object-contain" />}
+                                    {data.site_favicon && (
+                                        <img src={URL.createObjectURL(data.site_favicon)} alt="New Favicon Preview" className="h-16 object-contain" />
+                                    )}
+                                    <div className="flex gap-2">
+                                        <Input
+                                            id="site_favicon"
+                                            name="site_favicon"
+                                            type="file"
+                                            accept="image/*"
+                                            className="flex-1"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0] || null;
+                                                setData('site_favicon', file ?? undefined);
+                                            }}
+                                        />
+                                        {isFaviconUploaded() && (
+                                            <Button onClick={() => router.post(route('settings.general.remove-favicon'))}>Remove</Button>
+                                        )}
+                                    </div>
+                                    <InputError message={errors.site_favicon} />
+                                </div>
                             </div>
 
                             <div className="flex flex-col gap-2">

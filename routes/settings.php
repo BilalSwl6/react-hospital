@@ -37,6 +37,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
     Route::get('settings/general', [GeneralSettingController::class, 'index'])->name('settings.general');
     Route::post('settings/general', [GeneralSettingController::class, 'update'])->name('settings.general.update');
+    Route::post('settings/general/remove-logo', [GeneralSettingController::class, 'removeLogo'])->name('settings.general.remove-logo');
+    Route::post('settings/general/remove-favicon', [GeneralSettingController::class, 'removeFavicon'])->name('settings.general.remove-favicon');
     
     Route::get('settings/mail', [MailSettingController::class, 'index'])->name('settings.mail');
     Route::post('settings/mail', [MailSettingController::class, 'update'])->name('settings.mail.update');

@@ -71,4 +71,26 @@ class GeneralSettingController extends Controller
 
         return redirect()->back()->with('success', 'Settings updated successfully!');
     }
+
+    public function removeLogo(GeneralSettings $settings)
+    {
+        // Remove old file (strip URL if needed)
+        $disk = Storage::disk('r2');
+        $disk->delete(basename($settings->site_logo));
+
+        $settings->site_logo = null;
+        $settings->save();
+        return redirect()->back()->with('success', 'Settings updated successfully!');
+    }
+
+    public function removeFavicon(GeneralSettings $settings)
+    {
+        // Remove old file (strip URL if needed)
+        $disk = Storage::disk('r2');
+        $disk->delete(basename($settings->site_favicon));
+
+        $settings->site_favicon = null;
+        $settings->save();
+        return redirect()->back()->with('success', 'Settings updated successfully!');
+    }
 }

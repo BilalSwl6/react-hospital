@@ -70,22 +70,22 @@ class MailSettingController extends Controller
             'email' => 'required|email',
         ]);
 
-        // try {
-        //     Mail::raw(
-        //         '✅ This is a test email sent using your current mail settings.',
-        //         function ($message) use ($request, $settings) {
-        //             $message
-        //                 ->to($request->email)
-        //                 ->from($settings->from_email, $settings->from_name)
-        //                 ->subject('Test Email');
-        //         }
-        //     );
+        try {
+            Mail::raw(
+                '✅ This is a test email sent using your current mail settings.',
+                function ($message) use ($request, $settings) {
+                    $message
+                        ->to($request->email)
+                        ->from($settings->from_email, $settings->from_name)
+                        ->subject('Test Email');
+                }
+            );
 
-        //     return back()->with('success', "Test mail sent to {$request->email}");
-        // } catch (\Exception $e) {
-        //     return back()->withErrors([
-        //         'email' => '❌ Failed to send test email: ' . $e->getMessage(),
-        //     ]);
-        // }
+            return back()->with('success', "Test mail sent to {$request->email}");
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'email' => '❌ Failed to send test email: ' . $e->getMessage(),
+            ]);
+        }
     }
 }

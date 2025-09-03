@@ -3,11 +3,9 @@
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use App\Http\Controllers\drugDeptController\WardController;
 use App\Http\Controllers\drugDeptController\ExpenseController;
@@ -49,6 +47,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('expenseRecord/create/{expense_id}', [ExpenseRecordController::class, 'create'])->name('expenseRecord.create');
     Route::put('expenseRecord/{id}', [ExpenseRecordController::class, 'update'])->name('expenseRecord.update');
     Route::delete('expenseRecord/{id}', [ExpenseRecordController::class, 'destroy'])->name('expenseRecord.destroy');
+
+
 
     Route::get('shortcuts/', function () {
         return Inertia::render('shortcut');
