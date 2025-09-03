@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Settings\MailSettings;
 use App\Settings\GeneralSettings;
 use Illuminate\Support\Facades\Config;
-// use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
             Config::set('app.name', $generalSettings->site_name);
         }
         // Force HTTPS in production
-        // URL::forceScheme('https');
+        URL::forceScheme('https');
         if ($mailSettings->provider !== 'env') {
             Config::set('mail.from.address', $mailSettings->from_email);
             Config::set('mail.from.name', $mailSettings->from_name);
